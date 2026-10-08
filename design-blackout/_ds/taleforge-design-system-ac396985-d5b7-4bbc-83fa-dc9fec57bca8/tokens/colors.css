@@ -1,0 +1,85 @@
+/* Taleforge color tokens — dark is the default/primary theme (quiet observatory at night).
+   Light theme (daytime reading room) is available via [data-theme="light"] on :root or any ancestor. */
+:root{
+  /* ---- base neutrals, dark ---- */
+  --n-0:oklch(5.5% 0.01 258);   /* page ground, near-black blue-slate (never pure black) */
+  --n-1:oklch(10% 0.014 258);   /* alt section ground */
+  --n-2:oklch(12.5% 0.015 258); /* card / surface */
+  --n-3:oklch(15.5% 0.017 258); /* raised surface: popover, modal, input */
+  --n-4:oklch(19% 0.019 258);   /* hover surface */
+  --n-5:oklch(25% 0.02 258);    /* border subtle */
+  --n-6:oklch(35% 0.02 258);    /* border strong */
+  --n-7:oklch(56% 0.016 258);   /* muted text / icon */
+  --n-8:oklch(75% 0.012 258);   /* secondary text */
+  --n-9:oklch(95% 0.006 258);   /* primary text */
+
+  /* ---- brand accent: brass / candle-glow amber, deepened for a more mysterious glow ---- */
+  --accent-9:oklch(70% 0.14 73);
+  --accent-10:oklch(64% 0.16 71);   /* hover/active, slightly deeper */
+  --accent-contrast:oklch(10% 0.015 258); /* text placed ON accent fill */
+  --accent-soft:oklch(70% 0.14 73 / 0.16);  /* tinted background wash */
+  --accent-soft-strong:oklch(70% 0.14 73 / 0.3);
+
+  /* ---- semantic ---- */
+  --success-9:oklch(65% 0.13 145);
+  --warning-9:oklch(72% 0.14 80);
+  --danger-9:oklch(60% 0.19 25);
+  --info-9:oklch(66% 0.1 230);
+
+  /* ---- side-glow palette: each result "side" gets one, never the sole signal (always paired w/ text label) ---- */
+  --side-amber:oklch(66% 0.13 70);
+  --side-teal:oklch(63% 0.1 185);
+  --side-violet:oklch(63% 0.1 300);
+  --side-rose:oklch(63% 0.11 20);
+  --side-sage:oklch(63% 0.09 145);
+  --side-slate:oklch(63% 0.08 250);
+
+  /* ---- semantic aliases consumed by components ---- */
+  --bg-page:var(--n-0);
+  --bg-section-alt:var(--n-1);
+  --surface-card:var(--n-2);
+  --surface-raised:var(--n-3);
+  --surface-hover:var(--n-4);
+  --border-subtle:var(--n-5);
+  --border-strong:var(--n-6);
+  --text-primary:var(--n-9);
+  --text-secondary:var(--n-8);
+  --text-muted:var(--n-7);
+  --text-disabled:oklch(48% 0.014 258);
+  --link:var(--accent-9);
+  --link-hover:var(--accent-10);
+  --focus-ring:var(--accent-9);
+}
+
+[data-theme="light"]{
+  --n-0:oklch(97% 0.006 80);
+  --n-1:oklch(95% 0.008 80);
+  --n-2:oklch(99% 0.004 80);
+  --n-3:oklch(100% 0 0);
+  --n-4:oklch(93% 0.01 80);
+  --n-5:oklch(86% 0.012 80);
+  --n-6:oklch(74% 0.016 80);
+  --n-7:oklch(46% 0.014 258);
+  --n-8:oklch(34% 0.014 258);
+  --n-9:oklch(18% 0.012 258);
+
+  --accent-9:oklch(52% 0.135 68);
+  --accent-10:oklch(46% 0.145 66);
+  --accent-contrast:oklch(99% 0.004 80);
+  --accent-soft:oklch(52% 0.135 68 / 0.10);
+  --accent-soft-strong:oklch(52% 0.135 68 / 0.18);
+
+  --success-9:oklch(45% 0.11 145);
+  --warning-9:oklch(52% 0.13 75);
+  --danger-9:oklch(50% 0.17 25);
+  --info-9:oklch(48% 0.1 230);
+
+  --side-amber:oklch(52% 0.12 68);
+  --side-teal:oklch(48% 0.09 185);
+  --side-violet:oklch(50% 0.1 300);
+  --side-rose:oklch(50% 0.12 20);
+  --side-sage:oklch(47% 0.09 145);
+  --side-slate:oklch(48% 0.08 250);
+
+  --text-disabled:oklch(66% 0.012 80);
+}

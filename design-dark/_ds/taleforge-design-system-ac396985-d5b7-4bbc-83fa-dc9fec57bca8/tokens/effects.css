@@ -1,0 +1,48 @@
+:root{
+  --ease-standard:cubic-bezier(.2,.8,.2,1); /* @kind other */
+  --ease-out:cubic-bezier(.16,1,.3,1); /* @kind other */
+  --dur-fast:120ms; /* @kind other */
+  --dur-base:200ms; /* @kind other */
+  --dur-slow:360ms; /* @kind other */
+
+  --shadow-card:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+  --shadow-popover:0 16px 40px rgba(0,0,0,.55);
+  --shadow-inset-hairline:inset 0 0 0 1px var(--border-subtle);
+
+  --glow-accent:0 0 0 1px oklch(70% .14 73 / .4), 0 0 40px oklch(70% .14 73 / .24);
+  --glow-focus:0 0 0 3px var(--accent-soft-strong);
+}
+[data-theme="light"]{
+  --shadow-card:0 1px 2px rgba(20,16,8,.06), 0 8px 20px rgba(20,16,8,.08);
+  --shadow-popover:0 16px 36px rgba(20,16,8,.14);
+  --glow-accent:0 0 0 1px oklch(52% .135 68 / .35), 0 0 28px oklch(52% .135 68 / .14);
+}
+
+/* faint dot-grid ground texture — observatory graph paper, never louder than 4% */
+.bg-grid{
+  background-image:
+    linear-gradient(var(--border-subtle) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px);
+  background-size:40px 40px;
+  background-position:-1px -1px;
+  opacity:.5;
+}
+/* star-field texture — sparse, irregular, dim. Layer over --bg-page, not a replacement for it. */
+.bg-stars{
+  background-image:
+    radial-gradient(1.5px 1.5px at 8% 22%, var(--n-7), transparent),
+    radial-gradient(1px 1px at 18% 68%, var(--n-6), transparent),
+    radial-gradient(2px 2px at 32% 12%, var(--n-7), transparent),
+    radial-gradient(1px 1px at 46% 54%, var(--n-6), transparent),
+    radial-gradient(1.5px 1.5px at 61% 80%, var(--n-7), transparent),
+    radial-gradient(1px 1px at 74% 30%, var(--n-6), transparent),
+    radial-gradient(2px 2px at 85% 62%, var(--n-7), transparent),
+    radial-gradient(1px 1px at 93% 15%, var(--n-6), transparent),
+    radial-gradient(1.5px 1.5px at 25% 90%, var(--n-7), transparent),
+    radial-gradient(1px 1px at 55% 8%, var(--n-6), transparent);
+  background-repeat:no-repeat;
+  opacity:.85;
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.001ms !important;animation-iteration-count:1 !important;transition-duration:0.001ms !important;}
+}

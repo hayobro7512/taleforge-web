@@ -1,0 +1,199 @@
+{
+ "chips": [
+  "Character: Nicol Bolas",
+  "Character: Ugin, the Spirit Dragon",
+  "Card type: Planeswalker",
+  "Play style: Planeswalker-focused deck"
+ ],
+ "intro": "Placeholder intro. This sample shows 13 real cards in 4 placeholder themes; every explanation and source link is placeholder text for layout testing.",
+ "groups": [
+  {
+   "title": "Placeholder theme 1: cards named Nicol Bolas",
+   "explanation": "Placeholder text. These 4 cards are grouped by card type (creature, planeswalker) for layout testing.",
+   "cards": [
+    {
+     "name": "Nicol Bolas, Dragon-God",
+     "image_url": "https://cards.scryfall.io/normal/front/c/5/c5408607-af8f-48fe-bc40-32828d1976de.jpg?1783913282",
+     "scryfall_url": "https://scryfall.com/card/rvr/205/nicol-bolas-dragon-god",
+     "reason": "Placeholder text. Nicol Bolas, Dragon-God is a Legendary Planeswalker — Bolas with mana cost {U}{B}{B}{B}{R}. Its full rules text is on Scryfall.",
+     "evidence": "name match",
+     "scores": {
+      "story": 1.0,
+      "synergy": 0.2,
+      "similarity": 0.25,
+      "total": 1.146
+     },
+     "source_urls": [
+      "https://example.com/placeholder-source-1",
+      "https://example.com/placeholder-source-2",
+      "https://example.com/placeholder-source-3",
+      "https://example.com/placeholder-source-4",
+      "https://example.com/placeholder-source-5"
+     ]
+    },
+    {
+     "name": "Nicol Bolas, the Ravager // Nicol Bolas, the Arisen",
+     "image_url": "https://cards.scryfall.io/normal/front/7/b/7b215968-93a6-4278-ac61-4e3e8c3c3943.jpg?1783934524",
+     "scryfall_url": "https://scryfall.com/card/m19/218/nicol-bolas-the-ravager-nicol-bolas-the-arisen",
+     "reason": "Placeholder text. Nicol Bolas, the Ravager // Nicol Bolas, the Arisen is a Legendary Creature — Elder Dragon // Legendary Planeswalker — Bolas with mana cost {1}{U}{B}{R}. Its full rules text is on Scryfall.",
+     "evidence": "name match",
+     "scores": {
+      "story": 1.0,
+      "synergy": 0.35,
+      "similarity": 0.35,
+      "total": 1.223
+     },
+     "source_urls": []
+    },
+    {
+     "name": "Nicol Bolas, God-Pharaoh",
+     "image_url": "https://cards.scryfall.io/normal/front/5/9/597ca22d-2f08-47b3-9d93-c4d685cefb5f.jpg?1783921810",
+     "scryfall_url": "https://scryfall.com/card/2x2/260/nicol-bolas-god-pharaoh",
+     "reason": "Placeholder text. Nicol Bolas, God-Pharaoh is a Legendary Planeswalker — Bolas with mana cost {4}{U}{B}{R}. Its full rules text is on Scryfall.",
+     "evidence": "name match",
+     "scores": {
+      "story": 1.0,
+      "synergy": 0.5,
+      "similarity": 0.45,
+      "total": 1.3
+     },
+     "source_urls": []
+    },
+    {
+     "name": "Nicol Bolas, the Deceiver",
+     "image_url": "https://cards.scryfall.io/normal/front/7/4/74239d78-1608-4b27-b2fd-8c7453f6b86b.jpg?1783935986",
+     "scryfall_url": "https://scryfall.com/card/hou/205/nicol-bolas-the-deceiver",
+     "reason": "Placeholder text. Nicol Bolas, the Deceiver is a Legendary Planeswalker — Bolas with mana cost {5}{U}{B}{R}. Its full rules text is on Scryfall.",
+     "evidence": "name match",
+     "scores": {
+      "story": 1.0,
+      "synergy": 0.65,
+      "similarity": 0.25,
+      "total": 1.317
+     },
+     "source_urls": []
+    }
+   ]
+  },
+  {
+   "title": "Placeholder theme 2: colorless and red planeswalkers",
+   "explanation": "Placeholder text. These 2 cards are grouped by card type (planeswalker) for layout testing.",
+   "cards": [
+    {
+     "name": "Ugin, the Spirit Dragon",
+     "image_url": "https://cards.scryfall.io/normal/front/9/c/9c017fa9-7021-417a-9c2e-3df409644fcf.jpg?1783930748",
+     "scryfall_url": "https://scryfall.com/card/m21/1/ugin-the-spirit-dragon",
+     "reason": "Placeholder text. Ugin, the Spirit Dragon is a Legendary Planeswalker — Ugin with mana cost {8}. Its full rules text is on Scryfall.",
+     "evidence": "name match",
+     "scores": {
+      "story": 1.0,
+      "synergy": 0.8,
+      "similarity": 0.35,
+      "total": 1.394
+     },
+     "source_urls": []
+    },
+    {
+     "name": "Daretti, Scrap Savant",
+     "image_url": "https://cards.scryfall.io/normal/front/7/c/7cb9d4a0-66bd-454d-b676-80192a96c723.jpg?1783915656",
+     "scryfall_url": "https://scryfall.com/card/cmm/213/daretti-scrap-savant",
+     "reason": "Placeholder text. Daretti, Scrap Savant is a Legendary Planeswalker — Daretti with mana cost {3}{R}. Its full rules text is on Scryfall.",
+     "evidence": "deck synergy",
+     "scores": {
+      "story": 0.0,
+      "synergy": 0.2,
+      "similarity": 0.45,
+      "total": 0.166
+     },
+     "source_urls": []
+    }
+   ]
+  },
+  {
+   "title": "Placeholder theme 3: multicolor planeswalkers",
+   "explanation": "Placeholder text. These 4 cards are grouped by card type (planeswalker) for layout testing.",
+   "cards": [
+    {
+     "name": "Domri, Anarch of Bolas",
+     "image_url": "https://cards.scryfall.io/normal/front/c/1/c1af9881-e35b-4be2-8716-ea7c6664e22c.jpg?1783933398",
+     "scryfall_url": "https://scryfall.com/card/war/191/domri-anarch-of-bolas",
+     "reason": "Placeholder text. Domri, Anarch of Bolas is a Legendary Planeswalker — Domri with mana cost {1}{R}{G}. Its full rules text is on Scryfall.",
+     "evidence": "name match",
+     "scores": {
+      "story": 1.0,
+      "synergy": 0.35,
+      "similarity": 0.25,
+      "total": 1.203
+     },
+     "source_urls": [
+      "https://example.com/placeholder-source-6"
+     ]
+    },
+    {
+     "name": "Dovin Baan",
+     "image_url": "https://cards.scryfall.io/normal/front/2/3/2344e710-4570-41b6-af84-a3e7d784003a.jpg?1783937169",
+     "scryfall_url": "https://scryfall.com/card/kld/179/dovin-baan",
+     "reason": "Placeholder text. Dovin Baan is a Legendary Planeswalker — Dovin with mana cost {2}{W}{U}. Its full rules text is on Scryfall.",
+     "evidence": "story link",
+     "scores": {
+      "story": 0.6,
+      "synergy": 0.5,
+      "similarity": 0.35,
+      "total": 0.632
+     },
+     "source_urls": [
+      "https://example.com/placeholder-source-7"
+     ]
+    },
+    {
+     "name": "Ashiok, Dream Render",
+     "image_url": "https://cards.scryfall.io/normal/front/f/2/f2df3258-c053-48a8-974f-d80899b2cd93.jpg?1783933381",
+     "scryfall_url": "https://scryfall.com/card/war/228/ashiok-dream-render",
+     "reason": "Placeholder text. Ashiok, Dream Render is a Legendary Planeswalker — Ashiok with mana cost {1}{U/B}{U/B}. Its full rules text is on Scryfall.",
+     "evidence": "deck synergy",
+     "scores": {
+      "story": 0.0,
+      "synergy": 0.65,
+      "similarity": 0.45,
+      "total": 0.337
+     },
+     "source_urls": []
+    },
+    {
+     "name": "Dack Fayden",
+     "image_url": "https://cards.scryfall.io/normal/front/1/0/10158a5e-5a03-41ab-85d2-0907ccf32c9b.jpg?1783937555",
+     "scryfall_url": "https://scryfall.com/card/ema/199/dack-fayden",
+     "reason": "Placeholder text. Dack Fayden is a Legendary Planeswalker — Dack with mana cost {1}{U}{R}. Its full rules text is on Scryfall.",
+     "evidence": "deck synergy",
+     "scores": {
+      "story": 0.0,
+      "synergy": 0.8,
+      "similarity": 0.25,
+      "total": 0.354
+     },
+     "source_urls": []
+    }
+   ]
+  },
+  {
+   "title": "Placeholder theme 4: red planeswalkers",
+   "explanation": "Placeholder text. These 3 cards are grouped by card type (planeswalker) for layout testing.",
+   "cards": [
+    {
+     "name": "Chandra, Torch of Defiance",
+     "image_url": "https://cards.scryfall.io/normal/front/4/0/40cb22c8-cb03-45c9-bb0e-b8cabdcc43cd.jpg?1788329325",
+     "scryfall_url": "https://scryfall.com/card/fra/244/chandra-torch-of-defiance",
+     "reason": "Placeholder text. Chandra, Torch of Defiance is a Legendary Planeswalker — Chandra with mana cost {2}{R}{R}. Its full rules text is on Scryfall.",
+     "evidence": "deck synergy",
+     "scores": {
+      "story": 0.0,
+      "synergy": 0.2,
+      "similarity": 0.35,
+      "total": 0.146
+     },
+     "source_urls": []
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Taleforge results</title>
+<link rel="stylesheet" href="app.css">
+<script src="theme.js"></script>
+</head>
+<body>
+<div class="stars bg-stars" aria-hidden="true"></div>
+
+<header class="site-header">
+  <div class="brand">
+    <a class="wordmark" href="index.html">Taleforge</a>
+    <span class="badge">Beta</span>
+  </div>
+  <div class="header-actions">
+    <a class="btn btn-ghost btn-sm" href="index.html">New search</a>
+    <button type="button" class="tone-toggle">Lifted</button>
+    <button type="button" class="theme-toggle" aria-label="Toggle theme">
+      <svg class="moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
+      <svg class="sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="results">
+  <div class="results-inner">
+    <aside>
+      <div class="aside-block">
+        <span class="label">Your idea</span>
+        <p class="idea" id="idea"></p>
+        <a class="btn btn-secondary btn-sm" id="edit" href="index.html">Edit idea</a>
+      </div>
+      <div class="aside-block" id="read-as" hidden>
+        <span class="label">Read as</span>
+        <div class="chips" id="chips"></div>
+      </div>
+      <div class="preview-note" id="mechanic-note" role="note" hidden>
+        <strong>Heads up. </strong>Searches by game mechanic don't work well yet. Results are best when the idea names a character or a guild.
+      </div>
+      <form class="aside-block mix" id="mix">
+        <div class="mix-head">
+          <span class="label">Mix</span>
+          <button type="button" id="mix-reset">Reset</button>
+        </div>
+        <label class="slider balance">
+          <span class="slider-label"><output id="lore-out"></output><output id="synergy-out"></output></span>
+          <input type="range" id="balance" min="0" max="100" step="1" aria-label="Lore to Synergy balance">
+        </label>
+        <button type="submit" class="btn btn-secondary btn-sm">Update</button>
+        <span class="note">Slide toward Lore for cards tied to your idea in Magic’s story, or toward Synergy for cards often played together in real decks. Update runs a new search.</span>
+      </form>
+      <div class="aside-block">
+        <span class="label">Why a card is here</span>
+        <div class="legend">
+          <span class="tag tag-lore">Lore</span><span class="note">The card names a character from your idea, or a story source links it to your idea.</span>
+          <span class="tag tag-synergy">Synergy</span><span class="note">Often played with the other matched cards in real decks.</span>
+          <span class="tag tag-both">Both</span><span class="note">Lore and Synergy both apply.</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="groups" id="main" aria-live="polite">
+      <div class="loading" id="loading" hidden>
+        <span class="label">Searching</span>
+        <h1 id="loading-query"></h1>
+        <ol class="steps" id="steps">
+          <li><span class="mark"></span>Reading your idea</li>
+          <li><span class="mark"></span>Finding cards</li>
+          <li><span class="mark"></span>Writing explanations</li>
+        </ol>
+        <div class="row">
+          <span>Usually 20 to 40 seconds.</span>
+          <button type="button" class="btn btn-ghost btn-sm" id="cancel">Cancel</button>
+        </div>
+      </div>
+      <div class="summary" id="summary" hidden>
+        <h1 id="summary-title"></h1>
+        <p id="intro"></p>
+      </div>
+      <div id="groups" style="display:contents"></div>
+      <div id="candidates" style="display:contents"></div>
+      <div class="state" id="state" hidden></div>
+      <p class="end-note" id="end-note" hidden>That's everything we could explain. Adjust the mix or edit your idea to see different cards.</p>
+    </main>
+  </div>
+</div>
+
+<footer class="site-footer"></footer>
+<script src="footer.js"></script>
+
+<script src="app.js"></script>
+</body>
+</html>

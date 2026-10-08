@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Taleforge results</title>
+<link rel="stylesheet" href="app.css">
+<script src="../theme.js"></script>
+</head>
+<body>
+<div class="stars bg-stars" aria-hidden="true"></div>
+
+<header class="site-header">
+  <div class="brand">
+    <a class="wordmark" href="index.html">Taleforge</a>
+    <span class="badge">Beta</span>
+  </div>
+  <div class="header-actions">
+    <a class="btn btn-ghost btn-sm" href="index.html">New search</a>
+    <button type="button" class="theme-toggle" aria-label="Toggle theme">
+      <svg class="moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
+      <svg class="sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="results">
+  <div class="results-inner">
+    <aside>
+      <div class="aside-block">
+        <span class="label">Your idea</span>
+        <p class="idea" id="idea"></p>
+        <a class="btn btn-secondary btn-sm" id="edit" href="index.html">Edit idea</a>
+      </div>
+      <div class="preview-note" id="preview" hidden></div>
+      <div class="aside-block" id="read-as" hidden>
+        <span class="label">Read as</span>
+        <div class="chips" id="chips"></div>
+      </div>
+      <div class="aside-block">
+        <span class="label">Why a card is here</span>
+        <span class="tag tag-name">Name match</span>
+        <span class="note">The card names a character from your idea.</span>
+        <span class="tag tag-story">Story link</span>
+        <span class="note">A linked story article connects the card to your idea.</span>
+        <span class="tag tag-rules">Rules text</span>
+        <span class="note">Chosen for what the card does. The explanation comes from its rules text.</span>
+      </div>
+    </aside>
+
+    <main class="groups">
+      <div class="summary">
+        <h1 id="summary-title"></h1>
+        <p id="intro"></p>
+      </div>
+      <div id="groups" style="display:contents"></div>
+      <p class="end-note">That's everything we could explain. Edit your idea to see different cards.</p>
+    </main>
+  </div>
+</div>
+
+<footer class="site-footer"></footer>
+<script src="../footer.js"></script>
+
+<script src="../sample_result.js"></script>
+<script>
+  // ponytail: static preview renders one saved engine run; swap SAMPLE_RESULT for a fetch() once a search endpoint exists.
+  const data = window.SAMPLE_RESULT;
+  const GLOWS = ['amber', 'violet', 'teal', 'rose', 'sage', 'slate'];
+  const asked = (new URLSearchParams(location.search).get('q') || '').trim();
+
+  const el = (tag, cls, text) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  };
+  const link = (href, text, cls) => {
+    const a = el('a', cls, text + ' ↗');
+    a.href = href; a.target = '_blank'; a.rel = 'noopener';
+    return a;
+  };
+  const sourceLabel = (url) => {
+    const u = new URL(url);
+    const story = u.pathname.match(/magic-story\/([^/]+)/);
+    if (!story) return u.hostname.replace(/^www\./, '');
+    const words = story[1].replace(/-\d{4}-\d{2}-\d{2}$/, '').replace(/-/g, ' ');
+    return 'Magic Story: ' + words.charAt(0).toUpperCase() + words.slice(1);
+  };
+
+  // A card is a name match if its name contains a character's short name ("Ugin, the Spirit Dragon" -> "Ugin").
+  const names = (data.intent.characters || []).map((c) => c.split(',')[0].toLowerCase());
+  const evidence = (card) => {
+    if (names.some((n) => card.card_name.toLowerCase().includes(n))) return ['Name match', 'tag-name'];
+    if (card.source_urls.length) return ['Story link', 'tag-story'];
+    return ['Rules text', 'tag-rules'];
+  };
+
+  // Aside
+  document.getElementById('idea').textContent = '“' + (asked || data.request) + '”';
+  if (asked) document.getElementById('edit').href = 'index.html?q=' + encodeURIComponent(asked);
+  if (asked && asked.toLowerCase() !== data.request.toLowerCase()) {
+    const p = document.getElementById('preview');
+    p.hidden = false;
+    p.append(el('strong', null, 'Preview. '),
+      'Live search isn\'t connected yet, so this page shows a saved search for “' + data.request + '”.');
+  }
+  const it = data.intent;
+  const chips = [
+    ...(it.characters || []).map((v) => 'Character: ' + v),
+    ...(it.storyline ? ['Story: ' + it.storyline] : []),
+    ...(it.planes || []).map((v) => 'Plane: ' + v),
+    ...(it.colors ? ['Colors: ' + [].concat(it.colors).join(', ')] : []),
+    ...(it.card_types || []).map((v) => 'Card type: ' + v),
+    ...(it.mechanical_concepts || []).map((v) => 'Play style: ' + v),
+  ];
+  if (chips.length) {
+    document.getElementById('read-as').hidden = false;
+    document.getElementById('chips').append(...chips.map((c) => el('span', 'chip', c)));
+  }
+
+  // Summary
+  const cardCount = data.groups.reduce((n, g) => n + g.cards.length, 0);
+  document.getElementById('summary-title').textContent = data.groups.length + ' themes, ' + cardCount + ' cards';
+  document.getElementById('intro').textContent = data.intro;
+
+  // Groups
+  document.getElementById('groups').append(...data.groups.map((g, i) => {
+    const art = el('article', 'group');
+    art.style.setProperty('--glow', 'var(--side-' + GLOWS[i % GLOWS.length] + ')');
+
+    const head = el('div', 'group-head');
+    head.append(el('span', 'dot'), el('span', 'label', g.cards.length + (g.cards.length === 1 ? ' card' : ' cards')));
+    const sources = [...new Set(g.cards.flatMap((c) => c.source_urls))];
+    const prov = el('div', 'provenance');
+    prov.append(el('em', null, sources.length ? 'Written by AI from the linked sources.' : 'Written by AI from each card\'s rules text.'));
+    sources.forEach((s) => prov.append(link(s, sourceLabel(s), 'src')));
+
+    const grid = el('div', 'cards');
+    grid.append(...g.cards.map((c) => {
+      const card = el('div', 'card');
+      const pic = el('a', 'art');
+      pic.href = c.scryfall_uri; pic.target = '_blank'; pic.rel = 'noopener';
+      pic.setAttribute('aria-label', c.card_name + ' on Scryfall');
+      if (c.image_uri) {
+        const img = el('img');
+        img.src = c.image_uri; img.alt = ''; img.loading = 'lazy'; img.width = 488; img.height = 680;
+        pic.append(img);
+      }
+      const [kind, cls] = evidence(c);
+      const meta = el('div', 'meta');
+      const links = el('div', 'links');
+      links.append(link(c.scryfall_uri, 'Scryfall'));
+      c.source_urls.forEach((s) => links.append(link(s, 'Story')));
+      meta.append(el('span', 'tag ' + cls, kind), links);
+      card.append(pic, el('h3', null, c.card_name), el('p', null, c.explanation), meta);
+      return card;
+    }));
+
+    art.append(head, el('h2', null, g.label), el('p', 'reasoning', g.reasoning), prov, grid);
+    return art;
+  }));
+</script>
+</body>
+</html>

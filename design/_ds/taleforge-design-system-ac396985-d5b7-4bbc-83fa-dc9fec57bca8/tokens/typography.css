@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+
+:root{
+  /* ---- families ---- */
+  --font-display:'Spectral', 'Iowan Old Style', 'Georgia', serif;   /* large headlines only — bookish, a little arcane */
+  --font-body:'Manrope', -apple-system, 'Segoe UI', sans-serif;     /* everything you read */
+  --font-mono:'Space Mono', 'SFMono-Regular', Consolas, monospace; /* labels, tags, evidence, coordinates */
+
+  /* ---- scale (px, 1rem = 16px) ---- */
+  --text-xs:0.75rem;    /* 12 — tags, meta */
+  --text-sm:0.8125rem;  /* 13 — small mono labels */
+  --text-base:0.9375rem;/* 15 — default reading size */
+  --text-md:1rem;       /* 16 — UI body */
+  --text-lg:1.125rem;   /* 18 */
+  --text-xl:1.25rem;    /* 20 */
+  --text-2xl:1.5rem;    /* 24 */
+  --text-3xl:1.875rem;  /* 30 */
+  --text-4xl:2.375rem;  /* 38 */
+  --text-5xl:3rem;      /* 48 */
+  --text-6xl:3.75rem;   /* 60 */
+  --text-display:4.75rem; /* 76 — hero headline */
+
+  /* ---- weights ---- */
+  --weight-regular:400;
+  --weight-medium:500;
+  --weight-semibold:600;
+  --weight-bold:700;
+
+  /* ---- line-heights ---- */
+  --leading-tight:1.08;   /* display serif */
+  --leading-snug:1.25;    /* headings */
+  --leading-normal:1.5;   /* UI text */
+  --leading-relaxed:1.7;  /* card explanations, long reading */
+
+  /* ---- letter-spacing ---- */
+  --tracking-tight:-0.01em;
+  --tracking-normal:0em;
+  --tracking-wide:0.04em;
+  --tracking-label:0.1em; /* uppercase mono labels / eyebrow text */
+}

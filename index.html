@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Taleforge</title>
+<meta name="description" content="Describe a Magic: The Gathering Commander deck idea and get cards grouped into themes, with short explanations and sources.">
+<link rel="stylesheet" href="app.css">
+<script src="theme.js"></script>
+</head>
+<body>
+<div class="stars bg-stars" aria-hidden="true"></div>
+
+<header class="site-header">
+  <div class="brand">
+    <a class="wordmark" href="index.html">Taleforge</a>
+    <span class="badge">Beta</span>
+  </div>
+  <div class="header-actions">
+    <button type="button" class="tone-toggle">Lifted</button>
+    <button type="button" class="theme-toggle" aria-label="Toggle theme">
+      <svg class="moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
+      <svg class="sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="home">
+  <div class="grid bg-grid" aria-hidden="true"></div>
+  <div class="hero">
+    <span class="label">Free · no account · for Commander players</span>
+    <h1>Describe your deck idea.<br>We'll find the cards.</h1>
+    <p class="lede">A character, a guild, a storyline. Taleforge groups Commander-legal cards into themes, explains each group, and links the sources it used.</p>
+
+    <form class="search" action="results.html" method="get">
+      <textarea id="q" name="q" aria-label="Your deck idea" rows="3" required placeholder="A deck built around a character, a guild, or a storyline…"></textarea>
+      <span class="hint" id="hint" hidden>Describe a deck idea first: a character, a guild, or a story.</span>
+      <div class="row">
+        <button type="submit" class="btn btn-primary btn-lg">Find cards</button>
+        <span class="kbd" aria-hidden="true">⌘ ↵</span>
+      </div>
+      <div class="examples">
+        <span class="label">Try</span>
+        <button type="button" class="btn btn-secondary btn-sm" data-example>Give me a deck built around Nicol Bolas and Ugin</button>
+        <button type="button" class="btn btn-secondary btn-sm" data-example>A deck about Liliana's betrayal of Bolas</button>
+        <button type="button" class="btn btn-secondary btn-sm" data-example>A War of the Spark rivalry deck</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<footer class="site-footer"></footer>
+<script src="footer.js"></script>
+
+<script>
+  const form = document.querySelector('.search');
+  const q = document.getElementById('q');
+  const hint = document.getElementById('hint');
+  form.noValidate = true;
+  q.value = new URLSearchParams(location.search).get('q') || '';
+  form.addEventListener('submit', (e) => {
+    q.value = q.value.trim();
+    if (!q.value) { e.preventDefault(); hint.hidden = false; q.focus(); }
+  });
+  q.addEventListener('input', () => { hint.hidden = true; });
+  q.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); form.requestSubmit(); }
+  });
+  document.querySelectorAll('[data-example]').forEach((b) => b.addEventListener('click', () => {
+    q.value = b.textContent; hint.hidden = true; q.focus();
+  }));
+</script>
+</body>
+</html>

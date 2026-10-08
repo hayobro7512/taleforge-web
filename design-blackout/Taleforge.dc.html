@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/taleforge-design-system-ac396985-d5b7-4bbc-83fa-dc9fec57bca8/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/taleforge-design-system-ac396985-d5b7-4bbc-83fa-dc9fec57bca8/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/taleforge-design-system-ac396985-d5b7-4bbc-83fa-dc9fec57bca8/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/taleforge-design-system-ac396985-d5b7-4bbc-83fa-dc9fec57bca8/tokens/effects.css">
+  <link rel="stylesheet" href="_ds/taleforge-design-system-ac396985-d5b7-4bbc-83fa-dc9fec57bca8/styles.css">
+  <script src="_ds/taleforge-design-system-ac396985-d5b7-4bbc-83fa-dc9fec57bca8/_ds_bundle.js"></script>
+  <style>
+    html,body{margin:0;background:var(--bg-page);}
+    *{box-sizing:border-box;}
+    a{color:var(--link);text-decoration:none;}
+    a:hover{color:var(--link-hover);text-decoration:underline;}
+    ::selection{background:var(--accent-soft-strong);}
+  </style>
+</helmet>
+<div data-theme="{{ theme }}" data-tone="{{ tone }}" style="min-height:100vh;background-color:var(--bg-page);color:var(--text-primary);font-family:var(--font-body);position:relative;display:flex;flex-direction:column">
+  <sc-if value="{{ texture }}" hint-placeholder-val="{{ true }}">
+    <div class="bg-stars" style="position:fixed;inset:0;pointer-events:none"></div>
+  </sc-if>
+
+  <header style="position:relative;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 32px;border-bottom:1px solid var(--border-subtle)">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button type="button" onClick="{{ goHome }}" style="border:none;background:none;padding:0;cursor:pointer;font-family:var(--font-display);font-weight:600;font-size:24px;color:var(--text-primary)">Taleforge</button>
+      <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.Badge" tone="accent" hint-size="auto,22px">Beta</x-import>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <sc-if value="{{ notHome }}" hint-placeholder-val="{{ false }}">
+        <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.Button" variant="ghost" size="sm" on-click="{{ goHome }}" hint-size="auto,32px">New search</x-import>
+      </sc-if>
+      <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.ThemeToggle" theme="{{ theme }}" on-change="{{ setTheme }}" hint-size="36px,36px"></x-import>
+    </div>
+  </header>
+
+  <!-- HOME -->
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <main data-screen-label="Home" style="position:relative;flex:1;padding:112px 24px 80px">
+      <sc-if value="{{ texture }}" hint-placeholder-val="{{ true }}">
+        <div class="bg-grid" style="position:absolute;inset:0;pointer-events:none;-webkit-mask-image:radial-gradient(ellipse 60% 70% at 50% 30%, black, transparent);mask-image:radial-gradient(ellipse 60% 70% at 50% 30%, black, transparent)"></div>
+      </sc-if>
+      <div style="position:relative;max-width:760px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:24px;text-align:center">
+        <span style="font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-muted)">Free · no account · for Commander players</span>
+        <h1 style="margin:0;font-family:var(--font-display);font-weight:500;font-size:clamp(40px,6.4vw,72px);line-height:var(--leading-tight);letter-spacing:var(--tracking-tight);text-wrap:balance">Describe your deck idea.<br>We'll find the cards.</h1>
+        <p style="margin:0;max-width:540px;color:var(--text-secondary);font-size:var(--text-lg);line-height:var(--leading-relaxed);text-wrap:pretty">A character, a guild, a storyline. Taleforge groups Commander-legal cards into themes, explains each group, and links the sources it used.</p>
+
+        <div style="width:100%;display:flex;flex-direction:column;gap:14px;text-align:left;margin-top:16px">
+          <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.Input" multiline="{{ true }}" rows="{{ 3 }}" size="lg" value="{{ query }}" on-change="{{ setQuery }}" placeholder="A deck built around a character, a guild, or a storyline…" hint-size="100%,112px"></x-import>
+          <sc-if value="{{ emptyHint }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:var(--text-sm);color:var(--warning-9)">Describe a deck idea first — a character, a guild, or a story.</span>
+          </sc-if>
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px">
+            <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.Button" variant="primary" size="lg" on-click="{{ search }}" hint-size="130px,48px">Find cards</x-import>
+            <span style="font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-wide);color:var(--text-muted)">⌘ ↵</span>
+            <span style="flex:1"></span>
+            <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.Button" variant="ghost" size="md" on-click="{{ toggleMix }}" hint-size="150px,40px">{{ mixLabel }}</x-import>
+          </div>
+          <sc-if value="{{ mixOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:var(--space-24);display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:24px">
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.MixSlider" label="Story" value="{{ story }}" on-change="{{ setStory }}" color="var(--side-violet)" hint-size="100%,32px"></x-import>
+                <span style="font-size:var(--text-xs);line-height:var(--leading-normal);color:var(--text-muted)">Cards tied to the character's lore and flavor.</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.MixSlider" label="Synergy" value="{{ synergy }}" on-change="{{ setSynergy }}" color="var(--side-teal)" hint-size="100%,32px"></x-import>
+                <span style="font-size:var(--text-xs);line-height:var(--leading-normal);color:var(--text-muted)">Cards that work well together in play.</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.MixSlider" label="Similarity" value="{{ similarity }}" on-change="{{ setSimilarity }}" color="var(--side-slate)" hint-size="100%,32px"></x-import>
+                <span style="font-size:var(--text-xs);line-height:var(--leading-normal);color:var(--text-muted)">Cards that resemble the ones already matched.</span>
+              </div>
+            </div>
+          </sc-if>
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px">
+            <span style="font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-muted);margin-right:4px">Try</span>
+            <sc-for list="{{ examples }}" as="ex" hint-placeholder-count="3">
+              <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.Button" variant="secondary" size="sm" on-click="{{ ex.onClick }}" hint-size="160px,30px">{{ ex.label }}</x-import>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </main>
+  </sc-if>
+
+  <!-- LOADING -->
+  <sc-if value="{{ isLoading }}" hint-placeholder-val="{{ false }}">
+    <main data-screen-label="Loading" style="position:relative;flex:1;padding:112px 24px 80px">
+      <div style="max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:24px">
+        <span style="font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-muted)">Searching</span>
+        <h1 style="margin:0;font-family:var(--font-display);font-weight:400;font-style:italic;font-size:var(--text-4xl);line-height:var(--leading-snug);text-wrap:balance">“{{ query }}”</h1>
+        <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);box-shadow:var(--shadow-card);padding:var(--space-24)">
+          <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.LoadingSteps" steps="{{ loadingSteps }}" active-index="{{ step }}" hint-size="100%,170px"></x-import>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <span style="font-size:var(--text-sm);color:var(--text-muted)">Usually 5–10 seconds.</span>
+          <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.Button" variant="ghost" size="sm" on-click="{{ goHome }}" hint-size="80px,32px">Cancel</x-import>
+        </div>
+      </div>
+    </main>
+  </sc-if>
+
+  <!-- RESULTS -->
+  <sc-if value="{{ isResults }}" hint-placeholder-val="{{ false }}">
+    <main data-screen-label="Results" style="position:relative;flex:1;padding:40px 32px 80px">
+      <div style="max-width:1360px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:flex-start;gap:48px">
+        <aside style="flex:1 1 260px;max-width:320px;position:sticky;top:24px;display:flex;flex-direction:column;gap:28px">
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <span style="font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-muted)">Your idea</span>
+            <p style="margin:0;font-family:var(--font-display);font-style:italic;font-size:var(--text-2xl);line-height:var(--leading-snug);color:var(--text-primary);text-wrap:pretty">“{{ query }}”</p>
+            <div>
+              <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.Button" variant="secondary" size="sm" on-click="{{ goHome }}" hint-size="90px,30px">Edit idea</x-import>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+              <span style="font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-muted)">Read as</span>
+              <sc-if value="{{ hasRemoved }}" hint-placeholder-val="{{ false }}">
+                <button type="button" onClick="{{ restoreChips }}" style="border:none;background:none;padding:0;cursor:pointer;font-family:var(--font-body);font-size:var(--text-xs);color:var(--link)">Restore all</button>
+              </sc-if>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ chips }}" as="chip" hint-placeholder-count="4">
+                <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.QueryChip" label="{{ chip.label }}" on-remove="{{ chip.onRemove }}" hint-size="auto,32px"></x-import>
+              </sc-for>
+            </div>
+            <span style="font-size:var(--text-xs);line-height:var(--leading-normal);color:var(--text-muted)">Remove a reading and the themes that depend on it drop out.</span>
+          </div>
+
+          <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:var(--space-20);display:flex;flex-direction:column;gap:16px">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
+              <span style="font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-muted)">Mix</span>
+              <button type="button" onClick="{{ resetMix }}" style="border:none;background:none;padding:0;cursor:pointer;font-family:var(--font-body);font-size:var(--text-xs);color:var(--link)">Reset</button>
+            </div>
+            <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.MixSlider" label="Story" value="{{ story }}" on-change="{{ setStory }}" color="var(--side-violet)" hint-size="100%,32px"></x-import>
+            <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.MixSlider" label="Synergy" value="{{ synergy }}" on-change="{{ setSynergy }}" color="var(--side-teal)" hint-size="100%,32px"></x-import>
+            <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.MixSlider" label="Similarity" value="{{ similarity }}" on-change="{{ setSimilarity }}" color="var(--side-slate)" hint-size="100%,32px"></x-import>
+            <span style="font-size:var(--text-xs);line-height:var(--leading-normal);color:var(--text-muted)">Themes and cards reorder as you adjust. Hover a card's tag to see its scores.</span>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <span style="font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-muted)">Why a card is here</span>
+            <sc-for list="{{ evidenceKey }}" as="ev" hint-placeholder-count="4">
+              <div style="display:flex;flex-direction:column;align-items:flex-start;gap:6px">
+                <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.EvidenceTag" kind="{{ ev.kind }}" hint-size="auto,24px"></x-import>
+                <span style="font-size:var(--text-xs);line-height:var(--leading-normal);color:var(--text-secondary)">{{ ev.text }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </aside>
+
+        <section style="flex:999 1 560px;min-width:0;display:flex;flex-direction:column;gap:32px">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <h1 style="margin:0;font-family:var(--font-display);font-weight:500;font-size:var(--text-5xl);line-height:var(--leading-tight)">{{ summaryTitle }}</h1>
+            <span style="font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--text-muted)">{{ summaryMix }}</span>
+          </div>
+
+          <sc-for list="{{ groups }}" as="g" hint-placeholder-count="2">
+            <article style="border-radius:var(--radius-xl);border:1px solid var(--border-subtle);background:var(--bg-section-alt);padding:var(--space-24) var(--space-24) var(--space-32);box-shadow:0 0 56px -24px {{ g.color }};display:flex;flex-direction:column;gap:16px">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <span style="width:8px;height:8px;border-radius:50%;background:{{ g.color }};flex:none"></span>
+                  <span style="font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-muted)">{{ g.label }}</span>
+                </div>
+                <span style="font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-wide);color:var(--text-muted)">{{ g.countLabel }}</span>
+              </div>
+              <h2 style="margin:0;font-family:var(--font-display);font-weight:600;font-size:var(--text-3xl);line-height:var(--leading-snug)">{{ g.title }}</h2>
+              <p style="margin:0;max-width:680px;color:var(--text-secondary);font-size:var(--text-base);line-height:var(--leading-relaxed);text-wrap:pretty">{{ g.explanation }}</p>
+              <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;padding-bottom:8px;border-bottom:1px solid var(--border-subtle)">
+                <span style="font-size:var(--text-xs);font-style:italic;color:var(--text-muted)">Written by AI from the linked sources.</span>
+                <sc-for list="{{ g.sources }}" as="src" hint-placeholder-count="2">
+                  <a href="{{ src.href }}" target="_blank" rel="noopener" style="font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-wide)">{{ src.label }} ↗</a>
+                </sc-for>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:28px 20px;padding-top:8px">
+                <sc-for list="{{ g.cards }}" as="c" hint-placeholder-count="4">
+                  <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.ResultCard" name="{{ c.name }}" reason="{{ c.reason }}" evidence="{{ c.evidence }}" source-label="Scryfall" source-href="{{ c.href }}" scores="{{ c.scores }}" hint-size="200px,400px"></x-import>
+                </sc-for>
+              </div>
+            </article>
+          </sc-for>
+
+          <p style="margin:8px 0 0;font-size:var(--text-sm);color:var(--text-muted);text-align:center">That's everything we could explain with a source. Adjust the mix or edit your idea to see different cards.</p>
+        </section>
+      </div>
+    </main>
+  </sc-if>
+
+  <!-- NO MATCHES -->
+  <sc-if value="{{ isNoMatch }}" hint-placeholder-val="{{ false }}">
+    <main data-screen-label="No matches" style="position:relative;flex:1;padding:96px 24px 80px">
+      <div style="max-width:600px;margin:0 auto;display:flex;flex-direction:column;gap:24px">
+        <span style="font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-muted)">No matches</span>
+        <h1 style="margin:0;font-family:var(--font-display);font-weight:500;font-size:var(--text-5xl);line-height:var(--leading-tight)">Nothing fit that idea yet.</h1>
+        <p style="margin:0;color:var(--text-secondary);font-size:var(--text-lg);line-height:var(--leading-relaxed);text-wrap:pretty">We looked for Commander-legal cards connected to “{{ query }}” and found none we could explain with a source. Rather than guess, we're showing nothing.</p>
+        <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);padding:var(--space-20) var(--space-24);display:flex;flex-direction:column;gap:12px">
+          <span style="font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-muted)">What usually helps</span>
+          <sc-for list="{{ tips }}" as="tip" hint-placeholder-count="3">
+            <div style="display:flex;gap:12px;align-items:baseline">
+              <span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--accent-9)">{{ tip.n }}</span>
+              <span style="font-size:var(--text-base);line-height:var(--leading-normal);color:var(--text-primary)">{{ tip.text }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px">
+          <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.Button" variant="primary" size="lg" on-click="{{ goHome }}" hint-size="150px,48px">Edit your idea</x-import>
+          <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.Button" variant="ghost" size="lg" on-click="{{ tryExample }}" hint-size="190px,48px">Try a Nicol Bolas deck</x-import>
+        </div>
+      </div>
+    </main>
+  </sc-if>
+
+  <!-- NEEDS DETAIL -->
+  <sc-if value="{{ isNeeds }}" hint-placeholder-val="{{ false }}">
+    <main data-screen-label="Needs more detail" style="position:relative;flex:1;padding:96px 24px 80px">
+      <div style="max-width:600px;margin:0 auto;display:flex;flex-direction:column;gap:24px">
+        <span style="font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-muted)">Needs more detail</span>
+        <h1 style="margin:0;font-family:var(--font-display);font-weight:500;font-size:var(--text-5xl);line-height:var(--leading-tight)">Tell us a little more.</h1>
+        <p style="margin:0;color:var(--text-secondary);font-size:var(--text-lg);line-height:var(--leading-relaxed);text-wrap:pretty">“{{ query }}” fits several hundred cards — too many to group with care. Add a character, a plane, colors, or a feeling, and the themes get sharper.</p>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.Input" multiline="{{ true }}" rows="{{ 2 }}" size="lg" value="{{ query }}" on-change="{{ setQuery }}" hint-size="100%,88px"></x-import>
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px">
+            <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.Button" variant="primary" size="lg" on-click="{{ search }}" hint-size="130px,48px">Find cards</x-import>
+            <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.Button" variant="ghost" size="lg" on-click="{{ searchAnyway }}" hint-size="150px,48px">Search anyway</x-import>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">
+          <span style="font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-muted)">Narrower ideas</span>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <sc-for list="{{ refinements }}" as="r" hint-placeholder-count="3">
+              <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.Button" variant="secondary" size="sm" on-click="{{ r.onClick }}" hint-size="180px,30px">{{ r.label }}</x-import>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </main>
+  </sc-if>
+
+  <!-- DAILY LIMIT -->
+  <sc-if value="{{ isLimit }}" hint-placeholder-val="{{ false }}">
+    <main data-screen-label="Daily limit" style="position:relative;flex:1;padding:96px 24px 80px">
+      <div style="max-width:600px;margin:0 auto;display:flex;flex-direction:column;gap:24px">
+        <span style="font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-muted)">Daily limit</span>
+        <h1 style="margin:0;font-family:var(--font-display);font-weight:500;font-size:var(--text-5xl);line-height:var(--leading-tight)">That's today's searches.</h1>
+        <p style="margin:0;color:var(--text-secondary);font-size:var(--text-lg);line-height:var(--leading-relaxed);text-wrap:pretty">Taleforge is free and runs on a small budget, so everyone gets 20 searches a day. There's no account to upgrade and no paid tier.</p>
+        <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.Banner" tone="warning" title="Daily limit reached" hint-size="100%,80px">Searches reset at midnight UTC, in about 6 hours. Your last results are still here.</x-import>
+        <div style="display:flex;flex-wrap:wrap;gap:12px">
+          <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.Button" variant="secondary" size="lg" on-click="{{ showResults }}" hint-size="210px,48px">Back to your last results</x-import>
+        </div>
+      </div>
+    </main>
+  </sc-if>
+
+  <!-- MAINTENANCE -->
+  <sc-if value="{{ isMaint }}" hint-placeholder-val="{{ false }}">
+    <main data-screen-label="Maintenance" style="position:relative;flex:1;padding:96px 24px 80px">
+      <div style="max-width:600px;margin:0 auto;display:flex;flex-direction:column;gap:24px">
+        <span style="font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-muted)">Paused</span>
+        <h1 style="margin:0;font-family:var(--font-display);font-weight:500;font-size:var(--text-5xl);line-height:var(--leading-tight)">Search is paused for maintenance.</h1>
+        <p style="margin:0;color:var(--text-secondary);font-size:var(--text-lg);line-height:var(--leading-relaxed);text-wrap:pretty">We're adding the newest set to the card catalog. Your idea is kept below and will be ready to search when we're back.</p>
+        <div style="background:var(--surface-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:16px 18px;font-size:var(--text-lg);color:var(--text-secondary)">{{ query }}</div>
+        <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.Banner" tone="info" title="Usually under an hour" hint-size="100%,80px">Started at 21:40 UTC. This page checks again on its own every few minutes.</x-import>
+        <div style="display:flex;flex-wrap:wrap;gap:12px">
+          <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.Button" variant="secondary" size="lg" on-click="{{ search }}" hint-size="130px,48px">Check now</x-import>
+        </div>
+      </div>
+    </main>
+  </sc-if>
+
+  <!-- ERROR -->
+  <sc-if value="{{ isError }}" hint-placeholder-val="{{ false }}">
+    <main data-screen-label="Error" style="position:relative;flex:1;padding:96px 24px 80px">
+      <div style="max-width:600px;margin:0 auto;display:flex;flex-direction:column;gap:24px">
+        <span style="font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-muted)">Interrupted</span>
+        <h1 style="margin:0;font-family:var(--font-display);font-weight:500;font-size:var(--text-5xl);line-height:var(--leading-tight)">The search didn't finish.</h1>
+        <p style="margin:0;color:var(--text-secondary);font-size:var(--text-lg);line-height:var(--leading-relaxed);text-wrap:pretty">The connection dropped partway through. Nothing was saved, and your idea is still here, so trying again costs nothing.</p>
+        <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.Banner" tone="danger" title="Lost connection while writing explanations" hint-size="100%,80px">If this keeps happening, mention reference TF-5021 when you report it.</x-import>
+        <div style="display:flex;flex-wrap:wrap;gap:12px">
+          <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.Button" variant="primary" size="lg" on-click="{{ search }}" hint-size="120px,48px">Try again</x-import>
+          <x-import component-from-global-scope="TaleforgeDesignSystem_ac3969.Button" variant="ghost" size="lg" on-click="{{ goHome }}" hint-size="150px,48px">Edit your idea</x-import>
+        </div>
+      </div>
+    </main>
+  </sc-if>
+
+  <footer style="position:relative;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 32px;padding:24px 32px;border-top:1px solid var(--border-subtle);font-size:var(--text-xs);line-height:var(--leading-normal);color:var(--text-muted)">
+    <span style="max-width:560px">No account needed. Your deck ideas are used only to generate this search and aren't stored with your identity.</span>
+    <span>Footer disclaimer: see disclaimer.txt (the live pages load it from there).</span>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;screen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;home&quot;,&quot;loading&quot;,&quot;results&quot;,&quot;no-matches&quot;,&quot;needs-detail&quot;,&quot;daily-limit&quot;,&quot;maintenance&quot;,&quot;error&quot;],&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Screen&quot;},&quot;tone&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;lifted&quot;,&quot;original&quot;],&quot;default&quot;:&quot;original&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Look&quot;},&quot;texture&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Look&quot;}}">
+const LIFTED = { '--n-0': 'oklch(20% 0.018 258)', '--n-1': 'oklch(23.5% 0.02 258)', '--n-2': 'oklch(26.5% 0.021 258)', '--n-3': 'oklch(30% 0.022 258)', '--n-4': 'oklch(33.5% 0.023 258)', '--n-5': 'oklch(39% 0.024 258)', '--n-6': 'oklch(48% 0.024 258)', '--n-7': 'oklch(68% 0.016 258)', '--n-8': 'oklch(82% 0.01 258)' };
+const SCREENS = ['home','loading','results','no-matches','needs-detail','daily-limit','maintenance','error'];
+const DEFAULT_QUERY = 'A Nicol Bolas deck that plays the long game.';
+const MIX = { story: 60, synergy: 70, similarity: 35 };
+const CHIPS = [
+  { id: 'char', label: 'Character: Nicol Bolas', removable: false },
+  { id: 'colors', label: 'Colors: Grixis', removable: true },
+  { id: 'era', label: 'Story: Amonkhet & War of the Spark', removable: true },
+  { id: 'format', label: 'Format: Commander', removable: false },
+];
+const sc = (n) => 'https://scryfall.com/search?q=' + encodeURIComponent('!"' + n + '"');
+const card = (name, reason, evidence, story, synergy, similarity) => ({ name, reason, evidence, href: sc(name), scores: { story, synergy, similarity } });
+const GROUPS = [
+  { id: 'self', label: 'Name match', glow: 'amber', tags: ['char'], title: 'The dragon-god himself',
+    explanation: 'Every printed Bolas, plus the cards that carry his name. Pick one as your commander; the rest remind the table who is in charge.',
+    sources: [{ label: 'MTG Wiki — Nicol Bolas', href: 'https://mtg.fandom.com/wiki/Nicol_Bolas' }, { label: 'Scryfall — cards named Bolas', href: 'https://scryfall.com/search?q=name%3Abolas' }],
+    cards: [
+      card('Nicol Bolas, the Ravager', 'A Grixis legend that transforms into his planeswalker form. The natural commander.', 'Name match', .95, .6, .5),
+      card('Nicol Bolas, Dragon-God', 'Holds every other planeswalker’s loyalty abilities. Bolas at the height of his power.', 'Name match', .95, .55, .4),
+      card('Nicol Bolas, God-Pharaoh', 'His form as ruler of Amonkhet. Exiles opponents’ cards and lets you cast them.', 'Name match', .9, .5, .45),
+      card('Bolas’s Citadel', 'His namesake artifact. Pay life to play cards straight off your library.', 'Name match', .8, .7, .3),
+      card('Nicol Bolas, the Deceiver', 'A planeswalker that drains opponents and draws you cards.', 'Name match', .85, .5, .4),
+    ] },
+  { id: 'amonkhet', label: 'Story link', glow: 'violet', tags: ['era'], title: 'The God-Pharaoh’s Amonkhet',
+    explanation: 'Bolas ruled Amonkhet as its God-Pharaoh, bending its gods and trials toward an undead army. These cards come from that story and still pull their weight in Grixis.',
+    sources: [{ label: 'MTG Wiki — Amonkhet', href: 'https://mtg.fandom.com/wiki/Amonkhet' }, { label: 'MTG Wiki — God-Pharaoh', href: 'https://mtg.fandom.com/wiki/God-Pharaoh' }],
+    cards: [
+      card('The Scarab God', 'A god Bolas made and later cast out. Brings back creatures as zombies.', 'Story link', .8, .85, .4),
+      card('God-Pharaoh’s Gift', 'Named for his title on Amonkhet. Returns a creature as a 4/4 each combat.', 'Story link', .85, .65, .35),
+      card('Hour of Devastation', 'Shows his return. Wipes creatures and planeswalkers, except those named Bolas.', 'Story link', .8, .45, .3),
+      card('The Locust God', 'Another of his gods. Draws cards and makes hasty flyers.', 'Story link', .75, .6, .4),
+    ] },
+  { id: 'war', label: 'Story link', glow: 'rose', tags: ['era'], title: 'The War of the Spark',
+    explanation: 'His plan to steal every planeswalker’s spark ended on Ravnica. These cards show his army, his agents, and the spell at the center of it.',
+    sources: [{ label: 'MTG Wiki — War of the Spark', href: 'https://mtg.fandom.com/wiki/War_of_the_Spark' }, { label: 'Magic Story archive', href: 'https://example.com/placeholder-source' }],
+    cards: [
+      card('Liliana, Dreadhorde General', 'Bound to Bolas by contract, she led his undead army.', 'Story link', .8, .8, .45),
+      card('Dreadhorde Invasion', 'His zombie army arriving on Ravnica, one soldier per turn.', 'Story link', .7, .6, .35),
+      card('Tezzeret the Schemer', 'One of his longest-serving agents.', 'Story link', .75, .4, .35),
+      card('Spark Harvest', 'Its art and name point to the sparks he collected. Flexible removal.', 'Story link', .7, .5, .3),
+    ] },
+  { id: 'grind', label: 'Deck synergy', glow: 'teal', tags: ['colors'], title: 'Patience and leverage',
+    explanation: 'Bolas wins by outlasting everyone. These cards don’t name him, but they play the way he does: draw more, tax the table, and clear the board when it suits you.',
+    sources: [{ label: 'EDHREC — Nicol Bolas, the Ravager', href: 'https://edhrec.com/commanders/nicol-bolas-the-ravager' }, { label: 'Scryfall', href: 'https://scryfall.com' }],
+    cards: [
+      card('Rhystic Study', 'Opponents pay or you draw. Quiet leverage over the whole table.', 'Deck synergy', .2, .9, .5),
+      card('Notion Thief', 'Takes the cards your opponents would draw. A schemer’s card.', 'Deck synergy', .35, .85, .45),
+      card('Toxic Deluge', 'Clears the board at a price you choose.', 'Deck synergy', .15, .85, .4),
+      card('Cyclonic Rift', 'Resets everyone else in one late turn.', 'Deck synergy', .1, .9, .5),
+      card('Painful Truths', 'More cards, scaled by your three colors.', 'Deck synergy', .2, .7, .4),
+    ] },
+  { id: 'dragons', label: 'Similarity', glow: 'slate', tags: ['colors'], title: 'Dragons in his colors',
+    explanation: 'Not Bolas, but built like him: blue, black, and red dragons that steal, tax, and outlast. Chosen for resemblance to the cards above, and all legal in Grixis.',
+    sources: [{ label: 'Scryfall — Grixis dragons', href: 'https://scryfall.com/search?q=t%3Adragon+id%3C%3Dgrixis' }, { label: 'MTG Wiki — Dragonlord', href: 'https://mtg.fandom.com/wiki/Dragonlord' }],
+    cards: [
+      card('Dragonlord Silumgar', 'Steals a creature or planeswalker for as long as you hold him. Very Bolas.', 'Similarity', .4, .6, .85),
+      card('Silumgar, the Drifting Death', 'A blue-black dragonlord who wears opponents down slowly.', 'Similarity', .4, .45, .8),
+      card('Niv-Mizzet, Parun', 'A dragon schemer of Ravnica, and Bolas’s rival in the story.', 'Similarity', .5, .6, .75),
+      card('Kolaghan, the Storm’s Fury', 'A red dragonlord that pushes every dragon into the attack.', 'Similarity', .3, .55, .75),
+    ] },
+];
+const EVIDENCE = [
+  { kind: 'Name match', text: 'The card names the character.' },
+  { kind: 'Story link', text: 'The card appears in, or depicts, their story.' },
+  { kind: 'Deck synergy', text: 'The card plays well with the rest of the deck.' },
+  { kind: 'Similarity', text: 'The card resembles cards already matched.' },
+];
+const STEPS = ['Reading your idea', 'Recognizing characters and colors', 'Matching Commander-legal cards', 'Grouping cards into themes', 'Writing explanations from sources'];
+
+class Component extends DCLogic {
+  state = { screen: SCREENS.includes(this.props.screen) ? this.props.screen : 'home', query: DEFAULT_QUERY, ...MIX, mixOpen: false, removed: [], theme: 'dark', step: 2, emptyHint: false };
+
+  applyTone() {
+    const root = document.documentElement.style;
+    const lifted = (this.props.tone ?? 'lifted') === 'lifted';
+    Object.entries(LIFTED).forEach(([k, v]) => lifted ? root.setProperty(k, v) : root.removeProperty(k));
+  }
+  componentDidMount() {
+    this.applyTone();
+    this.applyScreenDefaults(this.state.screen);
+    this.onKey = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && ['home', 'needs-detail'].includes(this.state.screen)) { e.preventDefault(); this.search(); }
+    };
+    document.addEventListener('keydown', this.onKey);
+  }
+  componentWillUnmount() { document.removeEventListener('keydown', this.onKey); clearInterval(this.timer); }
+  componentDidUpdate(prev) {
+    if (prev.tone !== this.props.tone) this.applyTone();
+    if (prev.screen !== this.props.screen && SCREENS.includes(this.props.screen)) this.go(this.props.screen, true);
+  }
+  applyScreenDefaults(screen) {
+    if (screen === 'no-matches') this.setState({ query: 'A deck about my cat, Biscuit' });
+    else if (screen === 'needs-detail') this.setState({ query: 'Dragons' });
+    else if (screen === 'loading') this.setState({ step: 2 });
+  }
+  go(screen, fromTweak) {
+    clearInterval(this.timer);
+    this.setState({ screen, emptyHint: false });
+    if (fromTweak) this.applyScreenDefaults(screen);
+    window.scrollTo(0, 0);
+  }
+  search = () => {
+    const q = this.state.query.trim();
+    if (!q) { this.setState({ emptyHint: true }); return; }
+    const low = q.toLowerCase();
+    if (q.split(/\s+/).length <= 1) return this.go('needs-detail');
+    if (/\b(cat|dog|biscuit|pikachu|asdf)\b/.test(low)) return this.go('no-matches');
+    this.runLoading();
+  };
+  runLoading() {
+    this.go('loading');
+    this.setState({ step: 0, removed: [] });
+    this.timer = setInterval(() => {
+      const next = this.state.step + 1;
+      if (next >= STEPS.length) { this.go('results'); return; }
+      this.setState({ step: next });
+    }, 700);
+  }
+  renderVals() {
+    const s = this.state;
+    const sum = (s.story + s.synergy + s.similarity) || 1;
+    const fit = (c) => (c.scores.story * s.story + c.scores.synergy * s.synergy + c.scores.similarity * s.similarity) / sum;
+    const groups = GROUPS.filter((g) => !g.tags.some((t) => s.removed.includes(t)))
+      .map((g) => {
+        const cards = [...g.cards].sort((a, b) => fit(b) - fit(a));
+        const avg = cards.reduce((n, c) => n + fit(c), 0) / cards.length;
+        return { ...g, cards, avg, color: `var(--side-${g.glow})`, countLabel: cards.length + ' cards' };
+      })
+      .sort((a, b) => b.avg - a.avg);
+    const cardCount = groups.reduce((n, g) => n + g.cards.length, 0);
+    const chips = CHIPS.filter((c) => !s.removed.includes(c.id)).map((c) => ({
+      label: c.label,
+      onRemove: c.removable ? () => this.setState((st) => ({ removed: [...st.removed, c.id] })) : undefined,
+    }));
+    const fill = (label) => () => this.setState({ query: label, emptyHint: false });
+    return {
+      theme: s.theme,
+      setTheme: (t) => this.setState({ theme: t }),
+      texture: this.props.texture ?? true,
+      tone: this.props.tone ?? 'lifted',
+      isHome: s.screen === 'home', isLoading: s.screen === 'loading', isResults: s.screen === 'results',
+      isNoMatch: s.screen === 'no-matches', isNeeds: s.screen === 'needs-detail', isLimit: s.screen === 'daily-limit',
+      isMaint: s.screen === 'maintenance', isError: s.screen === 'error', notHome: s.screen !== 'home',
+      query: s.query,
+      setQuery: (v) => this.setState({ query: v, emptyHint: false }),
+      emptyHint: s.emptyHint,
+      search: this.search,
+      searchAnyway: () => this.runLoading(),
+      goHome: () => this.go('home'),
+      showResults: () => this.go('results'),
+      tryExample: () => { this.setState({ query: DEFAULT_QUERY }); this.runLoading(); },
+      story: s.story, synergy: s.synergy, similarity: s.similarity,
+      setStory: (v) => this.setState({ story: v }),
+      setSynergy: (v) => this.setState({ synergy: v }),
+      setSimilarity: (v) => this.setState({ similarity: v }),
+      resetMix: () => this.setState({ ...MIX }),
+      mixOpen: s.mixOpen,
+      mixLabel: s.mixOpen ? 'Hide the mix' : 'Adjust the mix',
+      toggleMix: () => this.setState((st) => ({ mixOpen: !st.mixOpen })),
+      examples: ['A Nicol Bolas deck', 'The Gruul clans of Ravnica', 'Phyrexia’s march on the Multiverse'].map((label) => ({ label, onClick: fill(label) })),
+      refinements: ['The dragonlords of Tarkir', 'Elder dragons of Dominaria', 'Dragons in Grixis colors'].map((label) => ({ label, onClick: () => { this.setState({ query: label }); this.runLoading(); } })),
+      tips: [
+        { n: '01', text: 'Check the spelling of names. Cards use official spellings.' },
+        { n: '02', text: 'Name a character, plane, or guild from Magic’s story.' },
+        { n: '03', text: 'Describe a feeling or play style instead, like “patient and cruel.”' },
+      ],
+      loadingSteps: STEPS,
+      step: s.step,
+      chips,
+      hasRemoved: s.removed.length > 0,
+      restoreChips: () => this.setState({ removed: [] }),
+      evidenceKey: EVIDENCE,
+      groups,
+      summaryTitle: `${groups.length} themes, ${cardCount} cards`,
+      summaryMix: `Ordered by your mix · Story ${s.story} · Synergy ${s.synergy} · Similarity ${s.similarity}`,
+    };
+  }
+}
+</script>
+</body>
+</html>
