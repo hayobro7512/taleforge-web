@@ -15,7 +15,7 @@ Request (JSON, body at most 4 KB):
 - `weights`: optional. Each key is optional, each value is a number from 0 to 1. Missing keys use the ranker defaults (story 0.5, synergy 0.3, similarity 0.2). `story` = lore link score, `synergy` = deck co-occurrence score, `similarity` = embedding similarity score.
 - `colors`: optional list of `W`, `U`, `B`, `R`, `G`. A card's color identity must be a subset of the list. Colorless cards are always allowed. `["C"]` (alone) means colorless cards only. Anything else is a 400 `bad_request`.
 - `types`: optional list from `Creature`, `Instant`, `Sorcery`, `Artifact`, `Enchantment`, `Planeswalker`, `Land`, `Battle`. A card must have at least one of them. Anything else is a 400 `bad_request`.
-- `commander`: optional card name, at most 100 characters, looked up in local card data only (case ignored; the front face of a two-faced card works). The commander never appears in the results. If `colors` is missing, the commander's color identity is used as the allowed colors (a colorless commander allows colorless cards only). If `colors` is given, it wins. A name that is not found is a 400 `unknown_commander`.
+- `commander`: optional card name, at most 100 characters, looked up in local card data only (case ignored; the front face of a two-faced card works). The commander never appears in the results. If `colors` is missing, the commander's color identity is used as the allowed colors (a colorless commander allows colorless cards only). If `colors` is given, it wins. A name that is not found is a 400 `unknown_commander`. A card that exists but cannot be a commander is a 400 `not_a_commander` (see Errors). One name only: a Partner or Background pair counts as a single commander for now.
 - An empty `colors` or `types` list means no filter.
 - All three filters are applied to the candidate pool before the top 30 are taken, so the list is still filled with up to 30 matching cards. They are part of the cache key.
 
@@ -98,6 +98,7 @@ Every error body is `{"error": code, "message": text}`.
 | 200 | `empty` | No cards found. Body also has `chips`, `intro`, `groups: []`. |
 | 400 | `bad_request` | Missing, empty or too long query, bad JSON, bad weights, or bad `colors`, `types` or `commander` values. |
 | 400 | `unknown_commander` | `commander` is a well-formed name that is not in the local card data. |
+| 400 | `not_a_commander` | `commander` names a card that exists in the local card data but cannot lead a deck: it is not Commander-legal, or it is neither a legendary creature, nor a card whose text says it can be your commander, nor a legendary Vehicle or Spacecraft with power and toughness. |
 | 429 | `rate_limited` | The daily search limit is reached. |
 | 503 | `paused` | Search is paused. |
 | 500 | `server_error` | Engine failed. No details are sent. |
