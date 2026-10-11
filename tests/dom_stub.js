@@ -4,7 +4,7 @@ class El {
   append(...k) { this.children.push(...k); }
   setAttribute(k, v) { this.attrs[k] = v; }
   addEventListener(e, f) { (this.listeners[e] = this.listeners[e] || []).push(f); }
-  fire(e) { (this.listeners[e] || []).forEach((f) => f({})); }
+  fire(e, ev = {}) { (this.listeners[e] || []).forEach((f) => f({ preventDefault() {}, ...ev })); }
   find(pred, out = []) { if (pred(this)) out.push(this); this.children.forEach((c) => c.find(pred, out)); return out; }
 }
 global.document = { createElement: (t) => new El(t) };

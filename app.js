@@ -123,12 +123,14 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
     syncEdit();
     search();
   };
-  // Filter edits apply on their own: one search FILTER_DELAY after the last chip or commander edit,
+  // Filter edits apply on their own: one search FILTER_DELAY after the last chip click,
   // skipped when the filters end up as they were. search() cancels the one in flight.
   const later = Taleforge.debounce(() => {
     if (JSON.stringify(filterControls.get()) !== JSON.stringify(filters)) update();
   }, Taleforge.FILTER_DELAY);
-  const filterControls = TaleforgeFilters.mount($('filter-controls'), filters, later);
+  // The commander field applies on Enter or blur, only if it changed since the last search; a pending chip wait goes with it.
+  const commit = () => { if (filterControls.get().commander !== filters.commander) update(); };
+  const filterControls = TaleforgeFilters.mount($('filter-controls'), filters, later, commit);
   mix.addEventListener('submit', update);
   $('filters').addEventListener('submit', update);
   $('filters-reset').addEventListener('click', () => { filterControls.set(TaleforgeFilters.empty()); later(); });
