@@ -35,6 +35,10 @@
     <form class="search" action="results.html" method="get">
       <textarea id="q" name="q" aria-label="Your deck idea" rows="3" required placeholder="A deck built around a character, a guild, or a storyline…"></textarea>
       <span class="hint" id="hint" hidden>Describe a deck idea first: a character, a guild, or a story.</span>
+      <details class="filters-box" id="filters-box">
+        <summary>Filters (optional): colors, card types, commander</summary>
+        <div class="filter-controls" id="filter-controls"></div>
+      </details>
       <div class="row">
         <button type="submit" class="btn btn-primary btn-lg">Find cards</button>
         <span class="kbd" aria-hidden="true">⌘ ↵</span>
@@ -51,16 +55,24 @@
 
 <footer class="site-footer"></footer>
 <script src="footer.js"></script>
+<script src="filters.js"></script>
 
 <script>
   const form = document.querySelector('.search');
   const q = document.getElementById('q');
   const hint = document.getElementById('hint');
   form.noValidate = true;
-  q.value = new URLSearchParams(location.search).get('q') || '';
+  const start = new URLSearchParams(location.search);
+  q.value = start.get('q') || '';
+  const initial = TaleforgeFilters.fromParams(start);
+  const controls = TaleforgeFilters.mount(document.getElementById('filter-controls'), initial);
+  if (TaleforgeFilters.chips(initial).length) document.getElementById('filters-box').open = true;
   form.addEventListener('submit', (e) => {
+    e.preventDefault();
     q.value = q.value.trim();
-    if (!q.value) { e.preventDefault(); hint.hidden = false; q.focus(); }
+    if (!q.value) { hint.hidden = false; q.focus(); return; }
+    // Filters travel in the address, so a results page can be shared, reloaded or edited.
+    location.href = 'results.html?' + TaleforgeFilters.toParams(controls.get(), new URLSearchParams({ q: q.value }));
   });
   q.addEventListener('input', () => { hint.hidden = true; });
   q.addEventListener('keydown', (e) => {

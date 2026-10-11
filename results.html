@@ -40,6 +40,15 @@
       <div class="preview-note" id="mechanic-note" role="note" hidden>
         <strong>Heads up. </strong>Searches by game mechanic don't work well yet. Results are best when the idea names a character or a guild.
       </div>
+      <form class="aside-block filters" id="filters">
+        <div class="mix-head">
+          <span class="label">Filters</span>
+          <button type="button" id="filters-reset">Clear</button>
+        </div>
+        <div class="filter-controls" id="filter-controls"></div>
+        <button type="submit" class="btn btn-secondary btn-sm">Update</button>
+        <span class="note">Filters narrow the cards before the best 30 are picked. A commander sets the colors unless you pick them, and is left out of the results. Update runs a new search.</span>
+      </form>
       <form class="aside-block mix" id="mix">
         <div class="mix-head">
           <span class="label">Mix</span>
@@ -57,7 +66,7 @@
         <div class="legend">
           <span class="tag tag-lore">Lore</span><span class="note">The card names a character from your idea, or a story source links it to your idea.</span>
           <span class="tag tag-synergy">Synergy</span><span class="note">Often played with the other matched cards in real decks.</span>
-          <span class="tag tag-both">Both</span><span class="note">Lore and Synergy both apply.</span>
+          <span class="note legend-wide">A card can show both tags. A card with no tag is here only because its text is close to your idea.</span>
         </div>
       </div>
     </aside>
@@ -91,6 +100,7 @@
 <footer class="site-footer"></footer>
 <script src="footer.js"></script>
 
+<script src="filters.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

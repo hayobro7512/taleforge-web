@@ -30,12 +30,11 @@ const Taleforge = (() => {
       const anchored = chips.some((c) => /^(Character|Story):/.test(c)) || GUILDS.test(query + ' ' + chips.join(' '));
       return mechanic && !anchored;
     },
-    // Lore = name match or story link; Synergy = deck synergy; Both = both; null = neither (similarity only).
-    tag(c) {
-      const s = c.scores || {};
-      const lore = c.evidence === 'name match' || s.story > 0;
-      const synergy = s.synergy > 0;
-      return lore && synergy ? 'Both' : lore ? 'Lore' : synergy ? 'Synergy' : null;
+    // Tags come from the API's evidence list: "lore" -> Lore, "synergy" -> Synergy, both -> both side by side,
+    // empty (similarity only) -> none.
+    tags(c) {
+      const e = c.evidence || [];
+      return [...(e.includes('lore') ? ['Lore'] : []), ...(e.includes('synergy') ? ['Synergy'] : [])];
     },
     // The API sends no source titles, so the URL slug is turned into one.
     sourceLabel(url) {
@@ -54,6 +53,7 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
   const params = new URLSearchParams(location.search);
   const query = (params.get('q') || '').trim();
   if (!query) { location.replace('index.html'); return; }
+  let filters = TaleforgeFilters.fromParams(params);
 
   const GLOWS = ['amber', 'violet', 'teal', 'rose', 'sage', 'slate'];
   const SHOWN_SOURCES = 2; // per card; the rest sit behind "+N more"
@@ -79,10 +79,11 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
     return a;
   };
   const { sourceLabel } = Taleforge;
-  const editHref = 'index.html?q=' + encodeURIComponent(query);
+  const editHref = () => 'index.html?' + TaleforgeFilters.toParams(filters, new URLSearchParams({ q: query }));
 
   $('idea').textContent = '“' + query + '”';
-  $('edit').href = editHref;
+  const syncEdit = () => { $('edit').href = editHref(); };
+  syncEdit();
   $('loading-query').textContent = '“' + query + '”';
 
   // ---- mix ----
@@ -100,14 +101,22 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
   setBalance(Taleforge.balanceFromParams(params));
   slider.addEventListener('input', paint);
   $('mix-reset').addEventListener('click', () => setBalance(Taleforge.DEFAULT_BALANCE));
-  mix.addEventListener('submit', (e) => {
+  // Update (under the mix or under the filters) runs one new search with both settings.
+  const update = (e) => {
     e.preventDefault();
+    filters = filterControls.get();
     const u = new URL(location.href);
     ['story', 'synergy', 'similarity'].forEach((k) => u.searchParams.delete(k));
     u.searchParams.set('balance', balance());
+    TaleforgeFilters.toParams(filters, u.searchParams);
     history.replaceState(null, '', u);
+    syncEdit();
     search();
-  });
+  };
+  const filterControls = TaleforgeFilters.mount($('filter-controls'), filters);
+  mix.addEventListener('submit', update);
+  $('filters').addEventListener('submit', update);
+  $('filters-reset').addEventListener('click', () => filterControls.set(TaleforgeFilters.empty()));
 
   // ---- rendering ----
   const setStep = (k) => [...$('steps').children].forEach((li, i) => {
@@ -115,8 +124,9 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
   });
 
   const renderChips = (chips) => {
-    $('read-as').hidden = !chips.length;
-    $('chips').replaceChildren(...chips.map((c) => el('span', 'chip', c)));
+    const all = [...chips, ...TaleforgeFilters.chips(filters)];
+    $('read-as').hidden = !all.length;
+    $('chips').replaceChildren(...all.map((c) => el('span', 'chip', c)));
     $('mechanic-note').hidden = !Taleforge.showMechanicNote(chips, query);
   };
 
@@ -133,13 +143,17 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
       pic.append(img);
     }
     const meta = el('div', 'meta');
-    const kind = Taleforge.tag(c);
-    if (kind) {
-      const tag = el('span', 'tag tag-' + kind.toLowerCase(), kind);
+    const kinds = Taleforge.tags(c);
+    if (kinds.length) {
       const s = c.scores || {};
       const pct = (v) => Math.round((v || 0) * 100) + '%';
-      tag.title = `Story ${pct(s.story)} · Synergy ${pct(s.synergy)} · Similarity ${pct(s.similarity)}`;
-      meta.append(tag);
+      const wrap = el('div', 'tags');
+      kinds.forEach((kind) => {
+        const tag = el('span', 'tag tag-' + kind.toLowerCase(), kind);
+        tag.title = kind === 'Lore' ? `Story ${pct(s.story)}` : `Synergy ${pct(s.synergy)}`;
+        wrap.append(tag);
+      });
+      meta.append(wrap);
     }
     const links = el('div', 'links');
     if (c.scryfall_url) links.append(link(c.scryfall_url, 'Scryfall'));
@@ -243,7 +257,7 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
     b.addEventListener('click', onClick);
     return b;
   };
-  const editButton = (cls) => button('Edit your idea', cls, () => { location.href = editHref; });
+  const editButton = (cls) => button('Edit your idea', cls, () => { location.href = editHref(); });
   const banner = (tone, title, text) => {
     const b = el('div', 'banner banner-' + tone);
     const body = el('div');
@@ -283,6 +297,10 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
       showState('Paused', 'Search is paused.',
         'Taleforge has paused new searches for now. Your idea is kept below and will be ready to search when it’s back.',
         idea, row(button('Check now', 'btn-secondary', search), editButton('btn-ghost')));
+    } else if (status === 400 && body && body.error === 'unknown_commander') {
+      showState('Check your commander', 'That commander wasn’t found.',
+        'Taleforge looks the name up in its own card data. Check the spelling, or clear the commander field to search without one.',
+        row(editButton('btn-primary')));
     } else if (status === 400) {
       showState('Check your idea', 'That idea can’t be searched.', (body && body.message) || 'Edit your idea and try again.',
         row(editButton('btn-primary')));
@@ -324,7 +342,7 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
     try {
       const res = await fetch('/api/search?stream=1', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query, weights }), signal: run.signal,
+        body: JSON.stringify({ query, weights, ...TaleforgeFilters.body(filters) }), signal: run.signal,
       });
       if (!(res.headers.get('Content-Type') || '').startsWith('text/event-stream')) {
         showError(res.status, await res.json().catch(() => null));
@@ -357,7 +375,7 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
 
   $('cancel').addEventListener('click', () => {
     if (controller) controller.abort();
-    location.href = editHref;
+    location.href = editHref();
   });
 
   search();

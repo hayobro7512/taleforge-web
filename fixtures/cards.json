@@ -4,7 +4,18 @@
    "name": "Nicol Bolas, Dragon-God",
    "image_url": "https://cards.scryfall.io/normal/front/c/5/c5408607-af8f-48fe-bc40-32828d1976de.jpg?1783913282",
    "scryfall_url": "https://scryfall.com/card/rvr/205/nicol-bolas-dragon-god",
-   "evidence": "name match",
+   "types": [
+    "Planeswalker"
+   ],
+   "color_identity": [
+    "U",
+    "B",
+    "R"
+   ],
+   "evidence": [
+    "lore",
+    "synergy"
+   ],
    "scores": {
     "story": 1.0,
     "synergy": 0.2,
@@ -16,7 +27,19 @@
    "name": "Nicol Bolas, the Ravager // Nicol Bolas, the Arisen",
    "image_url": "https://cards.scryfall.io/normal/front/7/b/7b215968-93a6-4278-ac61-4e3e8c3c3943.jpg?1783934524",
    "scryfall_url": "https://scryfall.com/card/m19/218/nicol-bolas-the-ravager-nicol-bolas-the-arisen",
-   "evidence": "name match",
+   "types": [
+    "Creature",
+    "Planeswalker"
+   ],
+   "color_identity": [
+    "U",
+    "B",
+    "R"
+   ],
+   "evidence": [
+    "lore",
+    "synergy"
+   ],
    "scores": {
     "story": 1.0,
     "synergy": 0.35,
@@ -28,7 +51,18 @@
    "name": "Nicol Bolas, God-Pharaoh",
    "image_url": "https://cards.scryfall.io/normal/front/5/9/597ca22d-2f08-47b3-9d93-c4d685cefb5f.jpg?1783921810",
    "scryfall_url": "https://scryfall.com/card/2x2/260/nicol-bolas-god-pharaoh",
-   "evidence": "name match",
+   "types": [
+    "Planeswalker"
+   ],
+   "color_identity": [
+    "U",
+    "B",
+    "R"
+   ],
+   "evidence": [
+    "lore",
+    "synergy"
+   ],
    "scores": {
     "story": 1.0,
     "synergy": 0.5,
@@ -40,7 +74,18 @@
    "name": "Nicol Bolas, the Deceiver",
    "image_url": "https://cards.scryfall.io/normal/front/7/4/74239d78-1608-4b27-b2fd-8c7453f6b86b.jpg?1783935986",
    "scryfall_url": "https://scryfall.com/card/hou/205/nicol-bolas-the-deceiver",
-   "evidence": "name match",
+   "types": [
+    "Planeswalker"
+   ],
+   "color_identity": [
+    "U",
+    "B",
+    "R"
+   ],
+   "evidence": [
+    "lore",
+    "synergy"
+   ],
    "scores": {
     "story": 1.0,
     "synergy": 0.65,
@@ -52,7 +97,14 @@
    "name": "Ugin, the Spirit Dragon",
    "image_url": "https://cards.scryfall.io/normal/front/9/c/9c017fa9-7021-417a-9c2e-3df409644fcf.jpg?1783930748",
    "scryfall_url": "https://scryfall.com/card/m21/1/ugin-the-spirit-dragon",
-   "evidence": "name match",
+   "types": [
+    "Planeswalker"
+   ],
+   "color_identity": [],
+   "evidence": [
+    "lore",
+    "synergy"
+   ],
    "scores": {
     "story": 1.0,
     "synergy": 0.8,
@@ -64,7 +116,15 @@
    "name": "Daretti, Scrap Savant",
    "image_url": "https://cards.scryfall.io/normal/front/7/c/7cb9d4a0-66bd-454d-b676-80192a96c723.jpg?1783915656",
    "scryfall_url": "https://scryfall.com/card/cmm/213/daretti-scrap-savant",
-   "evidence": "deck synergy",
+   "types": [
+    "Planeswalker"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "evidence": [
+    "synergy"
+   ],
    "scores": {
     "story": 0.0,
     "synergy": 0.2,
@@ -76,7 +136,17 @@
    "name": "Domri, Anarch of Bolas",
    "image_url": "https://cards.scryfall.io/normal/front/c/1/c1af9881-e35b-4be2-8716-ea7c6664e22c.jpg?1783933398",
    "scryfall_url": "https://scryfall.com/card/war/191/domri-anarch-of-bolas",
-   "evidence": "name match",
+   "types": [
+    "Planeswalker"
+   ],
+   "color_identity": [
+    "R",
+    "G"
+   ],
+   "evidence": [
+    "lore",
+    "synergy"
+   ],
    "scores": {
     "story": 1.0,
     "synergy": 0.35,
@@ -88,7 +158,17 @@
    "name": "Dovin Baan",
    "image_url": "https://cards.scryfall.io/normal/front/2/3/2344e710-4570-41b6-af84-a3e7d784003a.jpg?1783937169",
    "scryfall_url": "https://scryfall.com/card/kld/179/dovin-baan",
-   "evidence": "story link",
+   "types": [
+    "Planeswalker"
+   ],
+   "color_identity": [
+    "W",
+    "U"
+   ],
+   "evidence": [
+    "lore",
+    "synergy"
+   ],
    "scores": {
     "story": 0.6,
     "synergy": 0.5,
@@ -100,7 +180,16 @@
    "name": "Ashiok, Dream Render",
    "image_url": "https://cards.scryfall.io/normal/front/f/2/f2df3258-c053-48a8-974f-d80899b2cd93.jpg?1783933381",
    "scryfall_url": "https://scryfall.com/card/war/228/ashiok-dream-render",
-   "evidence": "deck synergy",
+   "types": [
+    "Planeswalker"
+   ],
+   "color_identity": [
+    "U",
+    "B"
+   ],
+   "evidence": [
+    "synergy"
+   ],
    "scores": {
     "story": 0.0,
     "synergy": 0.65,
@@ -112,7 +201,16 @@
    "name": "Dack Fayden",
    "image_url": "https://cards.scryfall.io/normal/front/1/0/10158a5e-5a03-41ab-85d2-0907ccf32c9b.jpg?1783937555",
    "scryfall_url": "https://scryfall.com/card/ema/199/dack-fayden",
-   "evidence": "deck synergy",
+   "types": [
+    "Planeswalker"
+   ],
+   "color_identity": [
+    "U",
+    "R"
+   ],
+   "evidence": [
+    "synergy"
+   ],
    "scores": {
     "story": 0.0,
     "synergy": 0.8,
@@ -124,7 +222,15 @@
    "name": "Chandra, Torch of Defiance",
    "image_url": "https://cards.scryfall.io/normal/front/4/0/40cb22c8-cb03-45c9-bb0e-b8cabdcc43cd.jpg?1788329325",
    "scryfall_url": "https://scryfall.com/card/fra/244/chandra-torch-of-defiance",
-   "evidence": "deck synergy",
+   "types": [
+    "Planeswalker"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "evidence": [
+    "synergy"
+   ],
    "scores": {
     "story": 0.0,
     "synergy": 0.2,
@@ -136,7 +242,15 @@
    "name": "Chandra, Heart of Fire",
    "image_url": "https://cards.scryfall.io/normal/front/a/4/a4c3ca8c-c77c-43b8-84ad-796313ecc813.jpg?1783930694",
    "scryfall_url": "https://scryfall.com/card/m21/135/chandra-heart-of-fire",
-   "evidence": "deck synergy",
+   "types": [
+    "Planeswalker"
+   ],
+   "color_identity": [
+    "R"
+   ],
+   "evidence": [
+    "synergy"
+   ],
    "scores": {
     "story": 0.0,
     "synergy": 0.35,
@@ -148,12 +262,19 @@
    "name": "Daretti, Ingenious Iconoclast",
    "image_url": "https://cards.scryfall.io/normal/front/a/d/ad30aec2-cb67-4c92-9694-d33bef1884ee.jpg?1783937339",
    "scryfall_url": "https://scryfall.com/card/cn2/74/daretti-ingenious-iconoclast",
-   "evidence": "deck synergy",
+   "types": [
+    "Planeswalker"
+   ],
+   "color_identity": [
+    "B",
+    "R"
+   ],
+   "evidence": [],
    "scores": {
     "story": 0.0,
-    "synergy": 0.5,
+    "synergy": 0.0,
     "similarity": 0.25,
-    "total": 0.24
+    "total": 0.3
    }
   }
  ]
