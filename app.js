@@ -111,10 +111,11 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
   slider.addEventListener('input', paint);
   $('mix-reset').addEventListener('click', () => setBalance(Taleforge.DEFAULT_BALANCE));
   // The mix Update (or Enter in the commander field) runs one new search with both settings now.
+  const current = () => ({ ...filterControls.get(), commander: commander.get() });
   const update = (e) => {
     if (e) e.preventDefault();
     later.cancel();
-    filters = filterControls.get();
+    filters = current();
     const u = new URL(location.href);
     ['story', 'synergy', 'similarity'].forEach((k) => u.searchParams.delete(k));
     u.searchParams.set('balance', balance());
@@ -126,11 +127,14 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
   // Filter edits apply on their own: one search FILTER_DELAY after the last chip click,
   // skipped when the filters end up as they were. search() cancels the one in flight.
   const later = Taleforge.debounce(() => {
-    if (JSON.stringify(filterControls.get()) !== JSON.stringify(filters)) update();
+    if (JSON.stringify(current()) !== JSON.stringify(filters)) update();
   }, Taleforge.FILTER_DELAY);
-  // The commander field applies on Enter or blur, only if it changed since the last search; a pending chip wait goes with it.
-  const commit = () => { if (filterControls.get().commander !== filters.commander) update(); };
-  const filterControls = TaleforgeFilters.mount($('filter-controls'), filters, later, commit);
+  // The commander lives in its own Command zone box, out of the filters. It applies on Enter or blur, only if it
+  // changed since the last search; a pending chip wait goes with it.
+  const commit = () => { if (commander.get() !== filters.commander) update(); };
+  const filterControls = TaleforgeFilters.mount($('filter-controls'), filters, later);
+  const commander = TaleforgeFilters.mountCommander($('command-zone'), filters.commander, commit);
+  $('command-zone').addEventListener('submit', (e) => e.preventDefault());
   mix.addEventListener('submit', update);
   $('filters').addEventListener('submit', update);
   $('filters-reset').addEventListener('click', () => { filterControls.set(TaleforgeFilters.empty()); later(); });
@@ -160,7 +164,7 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
     const colors = el('div', 'chips');
     colors.append(...(ci.length ? ci : ['Colorless']).map((x) => el('span', 'chip', x)));
     const text = el('div', 'commander-text');
-    text.append(el('span', 'label', 'Commander'), el('h2', null, c.name), el('span', 'label', 'Color identity'), colors);
+    text.append(el('span', 'label', 'Command zone'), el('h2', null, c.name), el('span', 'label', 'Color identity'), colors);
     if (c.scryfall_url) text.append(link(c.scryfall_url, 'Scryfall', 'src'));
     box.replaceChildren(pic, text);
     box.hidden = false;
@@ -333,6 +337,10 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
       showState('Paused', 'Search is paused.',
         'Taleforge has paused new searches for now. Your idea is kept below and will be ready to search when it’s back.',
         idea, row(button('Check now', 'btn-secondary', search), editButton('btn-ghost')));
+    } else if (status === 400 && body && body.error === 'not_a_commander') {
+      showState('Check your commander', 'That card can\'t be a commander.',
+        'Pick a legendary creature or a card that says it can be your commander.',
+        row(editButton('btn-primary')));
     } else if (status === 400 && body && body.error === 'unknown_commander') {
       showState('Check your commander', 'That commander wasn’t found.',
         'Taleforge looks the name up in its own card data. Check the spelling, or clear the commander field to search without one.',

@@ -26,7 +26,7 @@ Press Ctrl+C in Terminal to stop the server.
 | `v-lifted/`, `v-blackout/` | Static previews of the two dark tones, with their own `app.css` |
 | `app.css` | Styles for the home and results pages |
 | `app.js` | Results page behaviour: runs the search and shows each step as it arrives |
-| `filters.js` | The filter controls (color chips, card-type chips, commander) used by both pages, and their URL and request helpers |
+| `filters.js` | The filter chips (colors, card types), the "Command zone" commander box, and their URL and request helpers, used by both pages |
 | `footer.js` | Footer on every page: privacy line, disclaimer, credits |
 | `theme.js` | Light/dark and tone switches |
 | `sample_result.js` | Placeholder search result used by the static previews |
@@ -53,7 +53,11 @@ For example, "a slow Bolas deck" or "show me the empty state".
 
 ### Filters
 
-Both pages have the same filter controls: color chips (W U B R G and Colorless; Colorless clears the others and picking a color clears Colorless), card-type chips, and an optional commander field. On the home page they sit under "Filters (optional)". On the results page they are in the sidebar and apply on their own: 1.5 seconds after your last chip click or Clear click, any search still running is cancelled and one new search starts (none if the filters ended up as they were). The commander field does not search while you type: it applies when you press Enter or leave the field, and only if its text changed since the last search; a chip wait still pending is applied together with it. The Update button is only under the Mix; it also applies any filter change still waiting. They are kept in the address as `colors=W,U` (or `colors=C`), `types=Creature,Instant` and `commander=Name`, sent as `colors`, `types` and `commander` per `API.md`, and shown as "Filter ·" chips under "Read as".
+Both pages have the same filter chips: colors (W U B R G and Colorless; Colorless clears the others and picking a color clears Colorless) and card types. On the home page they sit under "Filters (optional)". On the results page they are in the sidebar and apply on their own: 1.5 seconds after your last chip click or Clear click, any search still running is cancelled and one new search starts (none if the filters ended up as they were). The Update button is only under the Mix; it also applies any filter or commander change still waiting.
+
+The commander is not a filter. It has its own "Command zone" box on both pages, directly under the idea box, with a "Commander (optional)" field and the note "Must be a card that can be your commander." The field does not search while you type: it applies when you press Enter or leave the field, and only if its text changed since the last search; a chip wait still pending is applied together with it. On the home page it is sent with Find cards. The "Clear" button in Filters does not touch it. When a commander is found, the results page shows it above the results under the label "Command zone" (the `commander_card` from `API.md`).
+
+Everything is kept in the address as `colors=W,U` (or `colors=C`), `types=Creature,Instant` and `commander=Name`, sent as `colors`, `types` and `commander` per `API.md`, and shown as "Filter ·" chips under "Read as".
 
 The mock applies them to the 13 fixture cards, the way the real server filters before it picks the best 30:
 
@@ -62,6 +66,7 @@ The mock applies them to the 13 fixture cards, the way the real server filters b
 | colors | A card's color identity must be inside the chosen colors. Colorless cards always pass. Colorless alone keeps only colorless cards (Ugin). |
 | types | A card must have at least one of the chosen types. |
 | commander | The commander is removed. If it is one of the fixture cards (for example `Nicol Bolas, Dragon-God`, or the front face `Nicol Bolas, the Ravager`), the answer has `commander_card` and the results page shows it above the results (whole card image, name, color identity, Scryfall link); if no colors are chosen, its colors become the allowed colors. Any other name is accepted, changes nothing and gets no `commander_card`, so no commander block shows. |
+| commander, fixture card that cannot lead | 400 `not_a_commander` (for example `Nicol Bolas, Dragon-God`, `Ugin, the Spirit Dragon`, any planeswalker here): the "That card can't be a commander" page. Only `Nicol Bolas, the Ravager` is eligible (`commander_eligible` in `fixtures/cards.json`, a mock-only field the mock never sends). |
 | commander `unknown` | 400 `unknown_commander`: the "commander not found" page. |
 | bad values | 400 `bad_request`. |
 | nothing left | The "no matches" page. Groups that lose all their cards disappear. |

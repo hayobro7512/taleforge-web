@@ -14,8 +14,9 @@ takes the top 30: colors = color identity must be a subset (colorless always pas
 only), types = any of them, commander = removed from the results and, unless colors are given, its
 colors become the allowed colors. The mock knows only the fixture cards as commanders (full name or, for a
 two-faced card, the front face): those come back as commander_card in the understood and done events; other
-names are accepted, change nothing and get no commander_card. The commander "unknown" returns 400
-unknown_commander.
+names are accepted, change nothing and get no commander_card. A fixture card whose commander_eligible
+is false (a mock-only field, never sent) returns 400 not_a_commander; only "Nicol Bolas, the Ravager" is
+eligible. The commander "unknown" returns 400 unknown_commander.
 """
 import argparse
 import json
@@ -90,6 +91,9 @@ def check_request(raw_body):
         return None, (400, _err("bad_request", problem))
     if filters["commander"] and filters["commander"].casefold() == "unknown":
         return None, (400, _err("unknown_commander", "That commander was not found."))
+    named = find_commander(filters)
+    if named and not named["commander_eligible"]:
+        return None, (400, _err("not_a_commander", "That card can't be a commander."))
     return (query, filters), None
 
 
@@ -104,6 +108,11 @@ def find_commander(filters):
 
 def commander_card(card):
     return {k: card[k] for k in ("name", "image_url", "scryfall_url", "color_identity", "types")}
+
+
+def public(card):
+    """A card as the API sends it: commander_eligible is the mock's own knowledge, not a response field."""
+    return {k: v for k, v in card.items() if k != "commander_eligible"}
 
 
 def apply_filters(cards, filters):
@@ -159,7 +168,7 @@ def events_for(state, filters=NO_FILTERS):
         understood["commander_card"] = body["commander_card"] = commander_card(named)
     events = [("understood", understood)]
     # cards.json is the ranked list; two of its cards are in no group, so the page shows "More cards".
-    events.append(("cards", {"cards": ranked}))
+    events.append(("cards", {"cards": [public(c) for c in ranked]}))
     if state == "error":
         return events + [("error", fixture("server_error"))]
     for i, g in enumerate(groups):

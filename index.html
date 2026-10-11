@@ -35,8 +35,9 @@
     <form class="search" action="results.html" method="get">
       <textarea id="q" name="q" aria-label="Your deck idea" rows="3" required placeholder="A deck built around a character, a guild, or a storyline…"></textarea>
       <span class="hint" id="hint" hidden>Describe a deck idea first: a character, a guild, or a story.</span>
+      <div class="command-zone" id="command-zone"></div>
       <details class="filters-box" id="filters-box">
-        <summary>Filters (optional): colors, card types, commander</summary>
+        <summary>Filters (optional): colors, card types</summary>
         <div class="filter-controls" id="filter-controls"></div>
       </details>
       <div class="row">
@@ -66,13 +67,14 @@
   q.value = start.get('q') || '';
   const initial = TaleforgeFilters.fromParams(start);
   const controls = TaleforgeFilters.mount(document.getElementById('filter-controls'), initial);
-  if (TaleforgeFilters.chips(initial).length) document.getElementById('filters-box').open = true;
+  const commander = TaleforgeFilters.mountCommander(document.getElementById('command-zone'), initial.commander);
+  if (TaleforgeFilters.chips({ ...initial, commander: '' }).length) document.getElementById('filters-box').open = true;
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     q.value = q.value.trim();
     if (!q.value) { hint.hidden = false; q.focus(); return; }
     // Filters travel in the address, so a results page can be shared, reloaded or edited.
-    location.href = 'results.html?' + TaleforgeFilters.toParams(controls.get(), new URLSearchParams({ q: q.value }));
+    location.href = 'results.html?' + TaleforgeFilters.toParams({ ...controls.get(), commander: commander.get() }, new URLSearchParams({ q: q.value }));
   });
   q.addEventListener('input', () => { hint.hidden = true; });
   q.addEventListener('keydown', (e) => {
