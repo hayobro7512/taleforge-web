@@ -30,7 +30,8 @@ ERROR = {"error", "message"}  # "Every error body is {"error": code, "message": 
 class FixtureKeysTest(unittest.TestCase):
     def test_api_md_lists_the_expected_shape(self):
         self.assertEqual(TOP, {"chips", "intro", "groups"})
-        self.assertEqual(CARD, {"name", "image_url", "scryfall_url", "reason", "evidence", "scores", "source_urls"})
+        self.assertEqual(CARD, {"name", "image_url", "scryfall_url", "types", "color_identity", "reason", "evidence",
+                                "scores", "source_urls"})
 
     def test_every_fixture_matches_api_md(self):
         files = sorted((ROOT / "fixtures").glob("*.json"))
@@ -54,6 +55,26 @@ class FixtureKeysTest(unittest.TestCase):
                     self.assertEqual(set(body), ERROR)
 
 
+    def test_filter_fields_use_the_api_md_vocabulary(self):
+        ranked = json.loads((ROOT / "fixtures" / "cards.json").read_text())["cards"]
+        for c in ranked:
+            with self.subTest(card=c["name"]):
+                self.assertTrue(set(c["types"]) <= set(mock_server.CARD_TYPES))
+                self.assertTrue(set(c["color_identity"]) <= set("WUBRG"))
+                self.assertEqual(c["color_identity"], [x for x in "WUBRG" if x in c["color_identity"]])  # WUBRG order
+                self.assertTrue(set(c["evidence"]) <= {"lore", "synergy"})  # no combined "both" value
+        self.assertIn([], [c["evidence"] for c in ranked])  # a similarity-only card -> no tag
+        self.assertIn(["lore", "synergy"], [c["evidence"] for c in ranked])  # both tags side by side
+        self.assertIn(["synergy"], [c["evidence"] for c in ranked])
+        self.assertIn([], [c["color_identity"] for c in ranked])  # a colorless card
+
+    def test_no_both_tag_left(self):
+        for name in ("index.html", "results.html", "app.js", "app.css", "filters.js", "README.md"):
+            text = (ROOT / name).read_text()
+            with self.subTest(file=name):
+                self.assertNotIn("tag-both", text)
+                self.assertNotRegex(text, r"'Both'|\"Both\"|>Both<")
+
     def test_layout_cases(self):
         results = json.loads((ROOT / "fixtures" / "results.json").read_text())
         ranked = json.loads((ROOT / "fixtures" / "cards.json").read_text())["cards"]
@@ -75,8 +96,8 @@ class MockStreamTest(unittest.TestCase):
         cls.httpd.shutdown()
         cls.httpd.server_close()
 
-    def post(self, query, stream=True):
-        body = json.dumps({"query": query, "weights": {"story": 0.62}, "commander": "x", "colors": ["U"]}).encode()
+    def post(self, query, stream=True, **extra):
+        body = json.dumps({"query": query, "weights": {"story": 0.62}, **extra}).encode()
         req = urllib.request.Request(self.base + "/api/search" + ("?stream=1" if stream else ""), data=body,
                                      headers={"Content-Type": "application/json"})
         try:
@@ -98,6 +119,53 @@ class MockStreamTest(unittest.TestCase):
         self.assertEqual(self.post("paused")[:2], (503, "application/json"))
         self.assertEqual(self.post("error", stream=False)[0], 500)
         self.assertEqual(self.post(" ")[0], 400)
+
+    def names(self, text):
+        for chunk in text.strip().split("\n\n"):
+            event, data = chunk.split("\n")
+            if event == "event: cards":
+                return [c["name"] for c in json.loads(data.removeprefix("data: "))["cards"]]
+
+    def test_filters_are_applied_to_the_fixture_cards(self):
+        everything = self.names(self.post("a Bolas deck")[2])
+        self.assertEqual(len(everything), 13)
+        only_ub = self.names(self.post("a Bolas deck", colors=["U", "B"])[2])
+        self.assertEqual(sorted(only_ub), ["Ashiok, Dream Render", "Ugin, the Spirit Dragon"])  # colorless always passes
+        self.assertEqual(self.names(self.post("a Bolas deck", colors=["C"])[2]), ["Ugin, the Spirit Dragon"])
+        self.assertEqual(self.names(self.post("a Bolas deck", types=["Creature"])[2]),
+                         ["Nicol Bolas, the Ravager // Nicol Bolas, the Arisen"])
+        both = self.names(self.post("a Bolas deck", colors=["U", "B", "R"], types=["Creature", "Land"])[2])
+        self.assertEqual(both, ["Nicol Bolas, the Ravager // Nicol Bolas, the Arisen"])
+
+    def test_commander_is_excluded_and_sets_colors(self):
+        names = self.names(self.post("a Bolas deck", commander="nicol bolas, dragon-god")[2])
+        self.assertNotIn("Nicol Bolas, Dragon-God", names)
+        self.assertNotIn("Dovin Baan", names)  # has W; the commander is U B R
+        self.assertIn("Chandra, Torch of Defiance", names)
+        given = self.names(self.post("a Bolas deck", commander="Nicol Bolas, Dragon-God", colors=["W", "U"])[2])
+        self.assertIn("Dovin Baan", given)  # explicit colors win over the commander's
+        self.assertNotIn("Nicol Bolas, Dragon-God", given)
+        self.assertEqual(len(self.names(self.post("a Bolas deck", commander="Someone Else")[2])), 13)  # not a fixture card
+
+    def test_groups_follow_the_filters_and_nothing_left_is_the_empty_state(self):
+        _, _, text = self.post("a Bolas deck", types=["Creature"])
+        chunks = [c.split("\n") for c in text.strip().split("\n\n")]
+        self.assertEqual([c[0] for c in chunks], ["event: understood", "event: cards", "event: explanation", "event: done"])
+        done = json.loads(chunks[-1][1].removeprefix("data: "))
+        self.assertEqual(len(done["groups"]), 1)
+        none_left = self.post("a Bolas deck", colors=["W"], types=["Land"])[2]
+        self.assertEqual(self.events(none_left), ["understood", "cards", "done"])
+        self.assertIn('"error": "empty"', none_left)
+
+    def test_filter_errors(self):
+        status, _, text = self.post("a Bolas deck", stream=False, commander="Unknown")
+        self.assertEqual((status, json.loads(text)["error"]), (400, "unknown_commander"))
+        status, _, text = self.post("a Bolas deck", stream=True, commander="unknown")
+        self.assertEqual(status, 400)  # plain JSON before the first event
+        for bad in ({"colors": ["X"]}, {"colors": ["U", "C"]}, {"colors": "U"}, {"types": ["Dragon"]},
+                    {"commander": ""}, {"commander": "x" * 101}):
+            status, _, text = self.post("a Bolas deck", stream=False, **bad)
+            self.assertEqual((status, json.loads(text)["error"]), (400, "bad_request"), bad)
 
 
 if __name__ == "__main__":
