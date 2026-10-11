@@ -12,8 +12,10 @@ anything else -> normal results. Standard library only.
 Filters (colors, types, commander) are applied to the fixture cards, as the real server does before it
 takes the top 30: colors = color identity must be a subset (colorless always passes; ["C"] = colorless
 only), types = any of them, commander = removed from the results and, unless colors are given, its
-colors become the allowed colors. The mock knows only the fixture cards as commanders: other names are
-accepted and change nothing. The commander "unknown" returns 400 unknown_commander.
+colors become the allowed colors. The mock knows only the fixture cards as commanders (full name or, for a
+two-faced card, the front face): those come back as commander_card in the understood and done events; other
+names are accepted, change nothing and get no commander_card. The commander "unknown" returns 400
+unknown_commander.
 """
 import argparse
 import json
@@ -91,18 +93,30 @@ def check_request(raw_body):
     return (query, filters), None
 
 
+def find_commander(filters):
+    """The fixture card named as commander (case ignored; the front face of a two-faced card works), or None."""
+    name = (filters["commander"] or "").casefold()
+    for c in fixture("cards")["cards"]:
+        if name and name in (c["name"].casefold(), c["name"].split(" // ")[0].casefold()):
+            return c
+    return None
+
+
+def commander_card(card):
+    return {k: card[k] for k in ("name", "image_url", "scryfall_url", "color_identity", "types")}
+
+
 def apply_filters(cards, filters):
     """The fixture cards that pass the filters (the mock's stand-in for filtering the rank pool)."""
     allowed = None
     if filters["colors"]:
         allowed = set() if filters["colors"] == ["C"] else set(filters["colors"])
-    commander = (filters["commander"] or "").casefold()
-    named = [c for c in cards if c["name"].casefold() == commander]
+    named = find_commander(filters)
     if allowed is None and named:  # a known commander sets the colors unless colors were given
-        allowed = set(named[0]["color_identity"])
+        allowed = set(named["color_identity"])
     keep = []
     for c in cards:
-        if c in named:
+        if named and c["name"] == named["name"]:
             continue
         if allowed is not None and not set(c["color_identity"]) <= allowed:
             continue
@@ -139,7 +153,11 @@ def events_for(state, filters=NO_FILTERS):
         groups = []
     else:
         body = {**body, "groups": groups}
-    events = [("understood", {"chips": body["chips"]})]
+    understood = {"chips": body["chips"]}
+    named = find_commander(filters)
+    if named:  # sent with understood and again in the done body (the empty body too)
+        understood["commander_card"] = body["commander_card"] = commander_card(named)
+    events = [("understood", understood)]
     # cards.json is the ranked list; two of its cards are in no group, so the page shows "More cards".
     events.append(("cards", {"cards": ranked}))
     if state == "error":

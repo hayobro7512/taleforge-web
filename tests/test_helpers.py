@@ -91,7 +91,43 @@ class FilterHelpersTest(unittest.TestCase):
         self.assertEqual(types, ["Creature", "Land"])
         self.assertEqual(commander, "Atraxa x")
         self.assertEqual((cleared, cleared_input, cleared_state), ([], "", {"colors": [], "types": [], "commander": ""}))
-        self.assertEqual((changes, max_len, buttons), (6, 100, 13))  # 5 chip clicks + 1 input; 6 color + 7 type chips
+        self.assertEqual((changes, max_len, buttons), (5, 100, 13))  # 5 chip clicks, typing counts for none; 6 color + 7 type chips
+
+    def test_typing_in_commander_starts_no_search_until_enter_or_blur(self):
+        script = r"""
+        const El = require('./tests/dom_stub.js'), F = require('./filters.js');
+        const root = new El('div'); let chips = 0, commits = 0, prevented = 0;
+        const ctl = F.mount(root, F.empty(), () => { chips++; }, () => { commits++; });
+        const input = root.find((n) => n.tag === 'input')[0];
+        const out = [];
+        'Atraxa'.split('').forEach((c) => { input.value += c; input.fire('input'); });
+        out.push([chips, commits, ctl.get().commander]);            // typing: nothing started
+        input.fire('keydown', { key: 'a' }); out.push(commits);     // other keys: nothing
+        input.fire('keydown', { key: 'Enter', preventDefault() { prevented++; } }); out.push([commits, prevented]);
+        input.fire('blur'); out.push(commits);
+        console.log(JSON.stringify(out));
+        """
+        out = subprocess.run(["node", "-e", script], cwd=ROOT, capture_output=True, text=True, check=True)
+        self.assertEqual(json.loads(out.stdout), [[0, 0, "Atraxa"], 0, [1, 1], 2])
+
+    def test_filter_edits_run_one_search_after_the_last_one(self):
+        script = r"""
+        const T = require('./app.js'); let runs = 0;
+        const later = T.debounce(() => { runs++; }, 40);
+        const log = (x) => console.log(JSON.stringify(x));
+        later(); later();
+        setTimeout(() => {                               // a third edit: one run, 40 ms after it
+          later();
+          setTimeout(() => log([runs, T.FILTER_DELAY]), 20);   // too early
+          setTimeout(() => {
+            log(runs);
+            later(); later.cancel();
+            setTimeout(() => log(runs), 100);            // cancel() dropped the pending run
+          }, 100);
+        }, 20);
+        """
+        out = subprocess.run(["node", "-e", script], cwd=ROOT, capture_output=True, text=True, check=True)
+        self.assertEqual([json.loads(line) for line in out.stdout.split()], [[0, 1500], 1, 1])
 
     def test_api_md_names_the_same_types_and_colors(self):
         api = (ROOT / "API.md").read_text()

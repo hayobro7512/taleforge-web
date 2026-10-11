@@ -154,6 +154,12 @@ a:hover { color: var(--link-hover); text-decoration: underline; }
 .provenance em { font-size: var(--text-xs); color: var(--text-muted); }
 .src { font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: var(--tracking-wide); }
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 32px 24px; padding-top: 8px; }
+.commander { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 24px; }
+.commander-art { flex: 0 0 180px; }
+/* The whole card, uncropped (artist line visible). */
+.commander-art img { display: block; width: 100%; height: auto; border-radius: 4.75% / 3.5%; border: 1px solid var(--border-subtle); }
+.commander-text { flex: 1 1 220px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.commander-text h2 { margin: 0 0 6px; font-family: var(--font-display); font-weight: 600; font-size: var(--text-3xl); line-height: var(--leading-snug); text-wrap: balance; }
 .card { display: flex; flex-direction: column; gap: 10px; }
 .card .art {
   display: block; aspect-ratio: 488 / 680; border-radius: 4.75% / 3.5%; overflow: hidden;

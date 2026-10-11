@@ -15,13 +15,9 @@ sys.path.insert(0, str(ROOT))
 import mock_server  # noqa: E402
 
 
-def api_md_response():
-    """The 'Response 200' JSON example in API.md (the second json block)."""
-    blocks = re.findall(r"```json\n(.*?)```", (ROOT / "API.md").read_text(), re.S)
-    return json.loads(blocks[1])
-
-
-SAMPLE = api_md_response()
+API_BLOCKS = re.findall(r"```json\n(.*?)```", (ROOT / "API.md").read_text(), re.S)
+SAMPLE = json.loads(API_BLOCKS[1])  # the 'Response 200' example
+COMMANDER = set(json.loads(API_BLOCKS[2])["commander_card"])  # the commander_card example
 TOP, GROUP = set(SAMPLE), set(SAMPLE["groups"][0])
 CARD, SCORES = set(SAMPLE["groups"][0]["cards"][0]), set(SAMPLE["groups"][0]["cards"][0]["scores"])
 ERROR = {"error", "message"}  # "Every error body is {"error": code, "message": text}"
@@ -156,6 +152,31 @@ class MockStreamTest(unittest.TestCase):
         none_left = self.post("a Bolas deck", colors=["W"], types=["Land"])[2]
         self.assertEqual(self.events(none_left), ["understood", "cards", "done"])
         self.assertIn('"error": "empty"', none_left)
+
+    def stream(self, text):
+        return [(c.split("\n")[0].removeprefix("event: "), json.loads(c.split("\n")[1].removeprefix("data: ")))
+                for c in text.strip().split("\n\n")]
+
+    def test_commander_card_for_a_fixture_commander(self):
+        self.assertEqual(COMMANDER, {"name", "image_url", "scryfall_url", "color_identity", "types"})
+        events = dict(self.stream(self.post("a Bolas deck", commander="nicol bolas, dragon-god")[2]))
+        for event in ("understood", "done"):
+            card = events[event]["commander_card"]
+            self.assertEqual(set(card), COMMANDER, event)
+            self.assertEqual((card["name"], card["color_identity"]), ("Nicol Bolas, Dragon-God", ["U", "B", "R"]))
+        self.assertNotIn("commander_card", events["cards"])
+        # the front face of a two-faced card works, and the full name comes back
+        front = dict(self.stream(self.post("a Bolas deck", commander="Nicol Bolas, the Ravager")[2]))
+        self.assertEqual(front["done"]["commander_card"]["name"], "Nicol Bolas, the Ravager // Nicol Bolas, the Arisen")
+        self.assertNotIn("Nicol Bolas, the Ravager // Nicol Bolas, the Arisen", [c["name"] for c in front["cards"]["cards"]])
+        # the empty body carries it too, and the non-stream body has it
+        self.assertIn("commander_card", dict(self.stream(self.post("empty", commander="Ugin, the Spirit Dragon")[2]))["done"])
+        self.assertIn("commander_card", json.loads(self.post("a Bolas deck", stream=False, commander="Dovin Baan")[2]))
+
+    def test_no_commander_card_without_a_known_commander(self):
+        for extra in ({}, {"commander": "Someone Else"}):
+            for event, data in self.stream(self.post("a Bolas deck", **extra)[2]):
+                self.assertNotIn("commander_card", data, (extra, event))
 
     def test_filter_errors(self):
         status, _, text = self.post("a Bolas deck", stream=False, commander="Unknown")

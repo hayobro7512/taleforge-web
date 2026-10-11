@@ -3,6 +3,7 @@
 // Pure helpers; tests/test_server.py loads them through node.
 const Taleforge = (() => {
   const DEFAULT_BALANCE = 62; // Lore share of Lore+Synergy; 62 ~ the ranker's default 50:30
+  const FILTER_DELAY = 1500; // ms after the last filter edit before the search reruns
   const GUILDS = /\b(azorius|dimir|rakdos|gruul|selesnya|orzhov|izzet|golgari|boros|simic)\b/i;
   const SMALL = new Set(['a', 'an', 'and', 'as', 'at', 'but', 'by', 'for', 'from', 'in', 'into', 'of', 'on', 'or', 'the', 'to', 'vs', 'with']);
   const pct = (p, k) => {
@@ -11,6 +12,14 @@ const Taleforge = (() => {
   };
   return {
     DEFAULT_BALANCE,
+    FILTER_DELAY,
+    // Runs fn once, ms after the last call; cancel() drops a pending run.
+    debounce(fn, ms) {
+      let t;
+      const run = () => { clearTimeout(t); t = setTimeout(fn, ms); };
+      run.cancel = () => clearTimeout(t);
+      return run;
+    },
     // ?balance=, else an old ?story=&synergy=&similarity= URL (story / (story + synergy)), else the default.
     balanceFromParams(p) {
       const b = pct(p, 'balance');
@@ -101,9 +110,10 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
   setBalance(Taleforge.balanceFromParams(params));
   slider.addEventListener('input', paint);
   $('mix-reset').addEventListener('click', () => setBalance(Taleforge.DEFAULT_BALANCE));
-  // Update (under the mix or under the filters) runs one new search with both settings.
+  // The mix Update (or Enter in the commander field) runs one new search with both settings now.
   const update = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
+    later.cancel();
     filters = filterControls.get();
     const u = new URL(location.href);
     ['story', 'synergy', 'similarity'].forEach((k) => u.searchParams.delete(k));
@@ -113,10 +123,17 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
     syncEdit();
     search();
   };
-  const filterControls = TaleforgeFilters.mount($('filter-controls'), filters);
+  // Filter edits apply on their own: one search FILTER_DELAY after the last chip click,
+  // skipped when the filters end up as they were. search() cancels the one in flight.
+  const later = Taleforge.debounce(() => {
+    if (JSON.stringify(filterControls.get()) !== JSON.stringify(filters)) update();
+  }, Taleforge.FILTER_DELAY);
+  // The commander field applies on Enter or blur, only if it changed since the last search; a pending chip wait goes with it.
+  const commit = () => { if (filterControls.get().commander !== filters.commander) update(); };
+  const filterControls = TaleforgeFilters.mount($('filter-controls'), filters, later, commit);
   mix.addEventListener('submit', update);
   $('filters').addEventListener('submit', update);
-  $('filters-reset').addEventListener('click', () => filterControls.set(TaleforgeFilters.empty()));
+  $('filters-reset').addEventListener('click', () => { filterControls.set(TaleforgeFilters.empty()); later(); });
 
   // ---- rendering ----
   const setStep = (k) => [...$('steps').children].forEach((li, i) => {
@@ -128,6 +145,25 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
     $('read-as').hidden = !all.length;
     $('chips').replaceChildren(...all.map((c) => el('span', 'chip', c)));
     $('mechanic-note').hidden = !Taleforge.showMechanicNote(chips, query);
+  };
+
+  // The commander, from commander_card, above the results: whole card image, name, color identity, Scryfall link.
+  const renderCommander = (c) => {
+    const box = $('commander');
+    const pic = el('div', 'commander-art');
+    if (c.image_url) {
+      const img = el('img');
+      img.src = c.image_url; img.alt = ''; img.width = 488; img.height = 680;
+      pic.append(img);
+    }
+    const ci = c.color_identity || [];
+    const colors = el('div', 'chips');
+    colors.append(...(ci.length ? ci : ['Colorless']).map((x) => el('span', 'chip', x)));
+    const text = el('div', 'commander-text');
+    text.append(el('span', 'label', 'Commander'), el('h2', null, c.name), el('span', 'label', 'Color identity'), colors);
+    if (c.scryfall_url) text.append(link(c.scryfall_url, 'Scryfall', 'src'));
+    box.replaceChildren(pic, text);
+    box.hidden = false;
   };
 
   const cardEl = (c) => {
@@ -314,6 +350,7 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
   // ---- search ----
   // Returns true for an event that ends the search.
   const handle = (event, data) => {
+    if (data && data.commander_card) renderCommander(data.commander_card);
     if (event === 'understood') { renderChips(data.chips); setStep(1); }
     else if (event === 'cards') { renderCandidates(data.cards); setStep(2); }
     else if (event === 'explanation') renderGroup(data);
@@ -331,6 +368,7 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
     const run = controller = new AbortController();
     shownGroups = 0; found = []; placed = new Set();
     $('state').hidden = true;
+    $('commander').hidden = true;
     $('summary').hidden = true;
     $('end-note').hidden = true;
     $('groups').replaceChildren();

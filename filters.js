@@ -56,8 +56,10 @@ const TaleforgeFilters = (() => {
     return n;
   };
 
-  // Builds the controls inside root and returns { get, set }. onChange runs after every edit.
-  const mount = (root, initial, onChange = () => {}) => {
+  // Builds the controls inside root and returns { get, set }. onChange runs after every chip click.
+  // The commander field only calls onCommit (default: onChange) on Enter or blur, never while typing;
+  // with an onCommit, Enter does not submit the form.
+  const mount = (root, initial, onChange = () => {}, onCommit) => {
     let state = { ...empty(), ...initial };
     const group = (title, ...kids) => {
       const fs = el('fieldset', 'filter-group');
@@ -80,7 +82,13 @@ const TaleforgeFilters = (() => {
     const input = el('input');
     input.type = 'text'; input.name = 'commander'; input.maxLength = MAX_COMMANDER; input.autocomplete = 'off';
     input.placeholder = 'e.g. Atraxa, Praetors’ Voice';
-    input.addEventListener('input', () => { state.commander = input.value.split(/\s+/).filter(Boolean).join(' '); onChange(state); });
+    input.addEventListener('input', () => { state.commander = input.value.split(/\s+/).filter(Boolean).join(' '); });
+    input.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' || !onCommit) return;
+      e.preventDefault();
+      onCommit(state);
+    });
+    input.addEventListener('blur', () => (onCommit || onChange)(state));
     const field = el('label', 'field');
     field.append(el('span', 'label', 'Commander (optional)'), input);
     const paint = () => [...colorBtns, ...typeBtns].forEach(({ b, isOn }) => b.setAttribute('aria-pressed', String(isOn())));
