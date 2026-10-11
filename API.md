@@ -53,6 +53,27 @@ Response 200:
 - `scores`: the ranker's normalized signals (0 to 1) and the weighted `total` (includes the name-match boost).
 - `source_urls`: lore sources that ground `reason`; empty for a purely mechanical reason.
 - `image_url`, `scryfall_url` can be null.
+- `commander_card`: optional, see below. Present only when a `commander` was sent and found. It is never one of the recommended cards.
+
+### commander_card
+
+When the request has a `commander` that is found, the response body also has a top-level `commander_card` with the commander itself, so the page can show it next to the results. It is omitted when no commander was sent. It is not in any group and not in the `cards` event.
+
+```json
+{"commander_card": {
+  "name": "Nicol Bolas, Dragon-God",
+  "image_url": "https://cards.scryfall.io/...",
+  "scryfall_url": "https://scryfall.com/card/...",
+  "color_identity": ["U", "B", "R"],
+  "types": ["Planeswalker"]
+}}
+```
+
+- `name`: the card's full name as stored (for a two-faced card, both faces, joined with ` // `).
+- `image_url`, `scryfall_url`: same as on recommended cards; can be null.
+- `color_identity`, `types`: same format as on recommended cards.
+- In the stream, `commander_card` is sent with the `understood` event (right after the commander is looked up) and again in the `done` body. The `empty` 200 body carries it too when the commander was found.
+- It is part of the cache key through the `commander` request field.
 
 ## POST /api/search?stream=1
 
@@ -60,7 +81,7 @@ Used by the site (`app.js`). Same request body. The response is `text/event-stre
 
 | event | data |
 |---|---|
-| `understood` | `{"chips": [...]}` after the request is parsed |
+| `understood` | `{"chips": [...]}` after the request is parsed, plus `commander_card` when a commander was found |
 | `cards` | `{"cards": [...]}` the ranked candidates (up to 30, after the filters), same card fields without `reason` and `source_urls` |
 | `explanation` | `{"index", "title", "explanation", "cards"}` one per group as it is written; `index` is the group's place in the final list |
 | `done` | the full non-stream response body (may carry `error: "empty"`) |
