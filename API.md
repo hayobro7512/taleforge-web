@@ -62,15 +62,15 @@ When the request has a `commander` that is found, the response body also has a t
 ```json
 {"commander_card": {
   "name": "Nicol Bolas, Dragon-God",
-  "image_uri": "https://cards.scryfall.io/...",
-  "scryfall_uri": "https://scryfall.com/card/...",
+  "image_url": "https://cards.scryfall.io/...",
+  "scryfall_url": "https://scryfall.com/card/...",
   "color_identity": ["U", "B", "R"],
   "types": ["Planeswalker"]
 }}
 ```
 
 - `name`: the card's full name as stored (for a two-faced card, both faces, joined with ` // `).
-- `image_uri`, `scryfall_uri`: can be null. (These two names differ from the `image_url` and `scryfall_url` of recommended cards; they are the card data's own field names.)
+- `image_url`, `scryfall_url`: same as on recommended cards; can be null.
 - `color_identity`, `types`: same format as on recommended cards.
 - In the stream, `commander_card` is sent with the `understood` event (right after the commander is looked up) and again in the `done` body. The `empty` 200 body carries it too when the commander was found.
 - It is part of the cache key through the `commander` request field.
