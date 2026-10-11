@@ -53,7 +53,7 @@ For example, "a slow Bolas deck" or "show me the empty state".
 
 ### Filters
 
-Both pages have the same filter controls: color chips (W U B R G and Colorless; Colorless clears the others and picking a color clears Colorless), card-type chips, and an optional commander field. On the home page they sit under "Filters (optional)". On the results page they are in the sidebar, with their own Update button (the Mix Update button runs the same search). They are kept in the address as `colors=W,U` (or `colors=C`), `types=Creature,Instant` and `commander=Name`, sent as `colors`, `types` and `commander` per `API.md`, and shown as "Filter ·" chips under "Read as".
+Both pages have the same filter controls: color chips (W U B R G and Colorless; Colorless clears the others and picking a color clears Colorless), card-type chips, and an optional commander field. On the home page they sit under "Filters (optional)". On the results page they are in the sidebar and apply on their own: 1.5 seconds after your last chip click or commander keystroke, any search still running is cancelled and one new search starts (none if the filters ended up as they were). Pressing Enter in the commander field starts it at once. The Update button is only under the Mix; it also applies any filter change still waiting. They are kept in the address as `colors=W,U` (or `colors=C`), `types=Creature,Instant` and `commander=Name`, sent as `colors`, `types` and `commander` per `API.md`, and shown as "Filter ·" chips under "Read as".
 
 The mock applies them to the 13 fixture cards, the way the real server filters before it picks the best 30:
 
@@ -61,7 +61,7 @@ The mock applies them to the 13 fixture cards, the way the real server filters b
 |---|---|
 | colors | A card's color identity must be inside the chosen colors. Colorless cards always pass. Colorless alone keeps only colorless cards (Ugin). |
 | types | A card must have at least one of the chosen types. |
-| commander | The commander is removed. If it is one of the fixture cards (for example `Nicol Bolas, Dragon-God`) and no colors are chosen, its colors become the allowed colors. Any other name is accepted and changes nothing. |
+| commander | The commander is removed. If it is one of the fixture cards (for example `Nicol Bolas, Dragon-God`, or the front face `Nicol Bolas, the Ravager`), the answer has `commander_card` and the results page shows it above the results (whole card image, name, color identity, Scryfall link); if no colors are chosen, its colors become the allowed colors. Any other name is accepted, changes nothing and gets no `commander_card`, so no commander block shows. |
 | commander `unknown` | 400 `unknown_commander`: the "commander not found" page. |
 | bad values | 400 `bad_request`. |
 | nothing left | The "no matches" page. Groups that lose all their cards disappear. |
@@ -92,4 +92,4 @@ I review it and merge it. Please don't push to `main` directly.
 
 ## Checks (optional)
 
-`python3 -m unittest discover -s tests` checks that every placeholder answer in `fixtures/` uses the field names in `API.md`, that the mock sends the events in the right order and applies the filters, and (when `node` is installed) the tag rule and the filter helpers.
+`python3 -m unittest discover -s tests` checks that every placeholder answer in `fixtures/` uses the field names in `API.md`, that the mock sends the events in the right order and applies the filters and sends `commander_card`, and (when `node` is installed) the tag rule, the filter helpers and the filter delay.

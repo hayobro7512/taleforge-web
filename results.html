@@ -46,8 +46,7 @@
           <button type="button" id="filters-reset">Clear</button>
         </div>
         <div class="filter-controls" id="filter-controls"></div>
-        <button type="submit" class="btn btn-secondary btn-sm">Update</button>
-        <span class="note">Filters narrow the cards before the best 30 are picked. A commander sets the colors unless you pick them, and is left out of the results. Update runs a new search.</span>
+        <span class="note">Filters narrow the cards before the best 30 are picked. A commander sets the colors unless you pick them, and is left out of the results. A new search starts on its own a moment after you stop changing them.</span>
       </form>
       <form class="aside-block mix" id="mix">
         <div class="mix-head">
@@ -72,6 +71,7 @@
     </aside>
 
     <main class="groups" id="main" aria-live="polite">
+      <section class="commander" id="commander" hidden></section>
       <div class="loading" id="loading" hidden>
         <span class="label">Searching</span>
         <h1 id="loading-query"></h1>
