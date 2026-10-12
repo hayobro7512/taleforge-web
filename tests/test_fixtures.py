@@ -35,9 +35,9 @@ class FixtureKeysTest(unittest.TestCase):
         for path in files:
             body = json.loads(path.read_text())
             with self.subTest(fixture=path.name):
-                if set(body) == {"cards"}:  # the ranked list sent in the "cards" event: card fields without these two
+                if set(body) == {"cards"}:  # the mock's ranked list: "cards" event fields plus its own commander_eligible
                     for c in body["cards"]:
-                        self.assertEqual(set(c), CARD - {"reason", "source_urls"}, c.get("name"))
+                        self.assertEqual(set(c), CARD - {"reason", "source_urls"} | {"commander_eligible"}, c.get("name"))
                         self.assertEqual(set(c["scores"]), SCORES, c["name"])
                 elif "groups" in body:
                     # results, or the 200 "empty" body (results keys plus the error keys)
@@ -63,6 +63,8 @@ class FixtureKeysTest(unittest.TestCase):
         self.assertIn(["lore", "synergy"], [c["evidence"] for c in ranked])  # both tags side by side
         self.assertIn(["synergy"], [c["evidence"] for c in ranked])
         self.assertIn([], [c["color_identity"] for c in ranked])  # a colorless card
+        eligible = [c["name"] for c in ranked if c["commander_eligible"]]
+        self.assertEqual(eligible, ["Nicol Bolas, the Ravager // Nicol Bolas, the Arisen"])
 
     def test_no_both_tag_left(self):
         for name in ("index.html", "results.html", "app.js", "app.css", "filters.js", "README.md"):
@@ -134,14 +136,36 @@ class MockStreamTest(unittest.TestCase):
         self.assertEqual(both, ["Nicol Bolas, the Ravager // Nicol Bolas, the Arisen"])
 
     def test_commander_is_excluded_and_sets_colors(self):
-        names = self.names(self.post("a Bolas deck", commander="nicol bolas, dragon-god")[2])
-        self.assertNotIn("Nicol Bolas, Dragon-God", names)
-        self.assertNotIn("Dovin Baan", names)  # has W; the commander is U B R
-        self.assertIn("Chandra, Torch of Defiance", names)
-        given = self.names(self.post("a Bolas deck", commander="Nicol Bolas, Dragon-God", colors=["W", "U"])[2])
+        for name in ("nicol bolas, the ravager", "Nicol Bolas, the Ravager // Nicol Bolas, the Arisen"):  # front face or both
+            names = self.names(self.post("a Bolas deck", commander=name)[2])
+            self.assertNotIn("Nicol Bolas, the Ravager // Nicol Bolas, the Arisen", names)
+            self.assertNotIn("Dovin Baan", names)  # has W; the commander is U B R
+            self.assertIn("Chandra, Torch of Defiance", names)
+        given = self.names(self.post("a Bolas deck", commander="Nicol Bolas, the Ravager", colors=["W", "U"])[2])
         self.assertIn("Dovin Baan", given)  # explicit colors win over the commander's
-        self.assertNotIn("Nicol Bolas, Dragon-God", given)
+        self.assertNotIn("Nicol Bolas, the Ravager // Nicol Bolas, the Arisen", given)
         self.assertEqual(len(self.names(self.post("a Bolas deck", commander="Someone Else")[2])), 13)  # not a fixture card
+
+    def test_commander_card_is_sent_only_when_a_commander_is_found(self):
+        def cards(text):
+            out = {}
+            for chunk in text.strip().split("\n\n"):
+                event, data = chunk.split("\n")
+                out[event.removeprefix("event: ")] = json.loads(data.removeprefix("data: "))
+            return out
+        got = cards(self.post("a Bolas deck", commander="Nicol Bolas, the Ravager")[2])
+        card = got["understood"]["commander_card"]
+        self.assertEqual(set(card), {"name", "image_url", "scryfall_url", "color_identity", "types"})
+        self.assertEqual(card["name"], "Nicol Bolas, the Ravager // Nicol Bolas, the Arisen")
+        self.assertEqual(got["done"]["commander_card"], card)
+        self.assertNotIn("commander_card", got["cards"])
+        self.assertTrue(all("commander_eligible" not in c for c in got["cards"]["cards"]))  # mock-only field
+        none_left = cards(self.post("a Bolas deck", commander="Nicol Bolas, the Ravager", colors=["W"], types=["Land"])[2])
+        self.assertEqual(none_left["done"]["commander_card"], card)  # the empty 200 body carries it too
+        for plain in (self.post("a Bolas deck")[2], self.post("a Bolas deck", commander="Someone Else")[2]):
+            got = cards(plain)
+            self.assertNotIn("commander_card", got["understood"])
+            self.assertNotIn("commander_card", got["done"])
 
     def test_groups_follow_the_filters_and_nothing_left_is_the_empty_state(self):
         _, _, text = self.post("a Bolas deck", types=["Creature"])
@@ -158,20 +182,22 @@ class MockStreamTest(unittest.TestCase):
                 for c in text.strip().split("\n\n")]
 
     def test_commander_card_for_a_fixture_commander(self):
+        # Only "Nicol Bolas, the Ravager" can lead in the mock; the others get 400 not_a_commander.
+        ravager = "Nicol Bolas, the Ravager // Nicol Bolas, the Arisen"
         self.assertEqual(COMMANDER, {"name", "image_url", "scryfall_url", "color_identity", "types"})
-        events = dict(self.stream(self.post("a Bolas deck", commander="nicol bolas, dragon-god")[2]))
+        events = dict(self.stream(self.post("a Bolas deck", commander="nicol bolas, the ravager")[2]))
         for event in ("understood", "done"):
             card = events[event]["commander_card"]
             self.assertEqual(set(card), COMMANDER, event)
-            self.assertEqual((card["name"], card["color_identity"]), ("Nicol Bolas, Dragon-God", ["U", "B", "R"]))
+            self.assertEqual((card["name"], card["color_identity"]), (ravager, ["U", "B", "R"]))
         self.assertNotIn("commander_card", events["cards"])
-        # the front face of a two-faced card works, and the full name comes back
-        front = dict(self.stream(self.post("a Bolas deck", commander="Nicol Bolas, the Ravager")[2]))
-        self.assertEqual(front["done"]["commander_card"]["name"], "Nicol Bolas, the Ravager // Nicol Bolas, the Arisen")
-        self.assertNotIn("Nicol Bolas, the Ravager // Nicol Bolas, the Arisen", [c["name"] for c in front["cards"]["cards"]])
+        self.assertNotIn(ravager, [c["name"] for c in events["cards"]["cards"]])
+        # the full two-faced name works too
+        full = dict(self.stream(self.post("a Bolas deck", commander=ravager.lower())[2]))
+        self.assertEqual(full["done"]["commander_card"]["name"], ravager)
         # the empty body carries it too, and the non-stream body has it
-        self.assertIn("commander_card", dict(self.stream(self.post("empty", commander="Ugin, the Spirit Dragon")[2]))["done"])
-        self.assertIn("commander_card", json.loads(self.post("a Bolas deck", stream=False, commander="Dovin Baan")[2]))
+        self.assertIn("commander_card", dict(self.stream(self.post("empty", commander="Nicol Bolas, the Ravager")[2]))["done"])
+        self.assertIn("commander_card", json.loads(self.post("a Bolas deck", stream=False, commander="Nicol Bolas, the Ravager")[2]))
 
     def test_no_commander_card_without_a_known_commander(self):
         for extra in ({}, {"commander": "Someone Else"}):
@@ -183,6 +209,10 @@ class MockStreamTest(unittest.TestCase):
         self.assertEqual((status, json.loads(text)["error"]), (400, "unknown_commander"))
         status, _, text = self.post("a Bolas deck", stream=True, commander="unknown")
         self.assertEqual(status, 400)  # plain JSON before the first event
+        for name in ("Nicol Bolas, Dragon-God", "ugin, the spirit dragon", "Dovin Baan"):  # fixture cards that cannot lead
+            for stream in (False, True):
+                status, kind, text = self.post("a Bolas deck", stream=stream, commander=name)
+                self.assertEqual((status, kind, json.loads(text)["error"]), (400, "application/json", "not_a_commander"), name)
         for bad in ({"colors": ["X"]}, {"colors": ["U", "C"]}, {"colors": "U"}, {"types": ["Dragon"]},
                     {"commander": ""}, {"commander": "x" * 101}):
             status, _, text = self.post("a Bolas deck", stream=False, **bad)

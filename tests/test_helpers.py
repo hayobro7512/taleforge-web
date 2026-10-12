@@ -63,11 +63,11 @@ class FilterHelpersTest(unittest.TestCase):
         self.assertEqual(node("F.chips({colors:['W','U'],types:['Creature','Land'],commander:'Atraxa'})"),
                          ["Filter · Colors: W, U", "Filter · Card type: Creature, Land", "Filter · Commander: Atraxa"])
 
-    def test_mounted_controls_follow_the_toggle_rules(self):
+    def test_mounted_chips_follow_the_toggle_rules(self):
         script = r"""
         const El = require('./tests/dom_stub.js'), F = require('./filters.js');
         const root = new El('div'); let changes = 0;
-        const ctl = F.mount(root, { colors: ['U'], types: [], commander: '' }, () => { changes++; });
+        const ctl = F.mount(root, { colors: ['U'], types: [], commander: 'ignored' }, () => { changes++; });
         const btn = (text) => root.find((n) => n.tag === 'button' && n.textContent === text)[0];
         const pressed = () => root.find((n) => n.attrs['aria-pressed'] === 'true').map((n) => n.textContent);
         const out = [pressed()];
@@ -75,40 +75,47 @@ class FilterHelpersTest(unittest.TestCase):
         btn('Colorless').fire('click'); out.push(pressed());
         btn('R').fire('click'); out.push(pressed());
         btn('Land').fire('click'); btn('Creature').fire('click'); out.push(ctl.get().types);
-        const input = root.find((n) => n.tag === 'input')[0];
-        input.value = '  Atraxa   x '; input.fire('input'); out.push(ctl.get().commander);
-        ctl.set(F.empty()); out.push(pressed(), input.value, ctl.get());
-        out.push(changes, input.maxLength, root.find((n) => n.tag === 'button').length);
+        ctl.set(F.empty()); out.push(pressed(), ctl.get());
+        out.push(changes, root.find((n) => n.tag === 'button').length, root.find((n) => n.tag === 'input').length);
         console.log(JSON.stringify(out));
         """
         out = subprocess.run(["node", "-e", script], cwd=ROOT, capture_output=True, text=True, check=True)
-        pressed_start, after_w, after_colorless, after_r, types, commander, cleared, cleared_input, cleared_state, \
-            changes, max_len, buttons = json.loads(out.stdout)
+        pressed_start, after_w, after_colorless, after_r, types, cleared, cleared_state, changes, buttons, inputs = \
+            json.loads(out.stdout)
         self.assertEqual(pressed_start, ["U"])
         self.assertEqual(after_w, ["W", "U"])
         self.assertEqual(after_colorless, ["Colorless"])  # clears the others
         self.assertEqual(after_r, ["R"])  # a color clears Colorless
         self.assertEqual(types, ["Creature", "Land"])
-        self.assertEqual(commander, "Atraxa x")
-        self.assertEqual((cleared, cleared_input, cleared_state), ([], "", {"colors": [], "types": [], "commander": ""}))
-        self.assertEqual((changes, max_len, buttons), (5, 100, 13))  # 5 chip clicks, typing counts for none; 6 color + 7 type chips
+        self.assertEqual((cleared, cleared_state), ([], {"colors": [], "types": []}))
+        self.assertEqual((changes, buttons, inputs), (5, 13, 0))  # 5 chip clicks; 6 color + 7 type chips; no commander field here
 
-    def test_typing_in_commander_starts_no_search_until_enter_or_blur(self):
+    def test_command_zone_commits_only_on_enter_or_blur(self):
         script = r"""
         const El = require('./tests/dom_stub.js'), F = require('./filters.js');
-        const root = new El('div'); let chips = 0, commits = 0, prevented = 0;
-        const ctl = F.mount(root, F.empty(), () => { chips++; }, () => { commits++; });
+        const chipRoot = new El('div'), root = new El('div'); let chips = 0; const seen = [];
+        F.mount(chipRoot, F.empty(), () => { chips++; });
+        const cz = F.mountCommander(root, ' Atraxa  x ', (v) => seen.push(v));
         const input = root.find((n) => n.tag === 'input')[0];
-        const out = [];
-        'Atraxa'.split('').forEach((c) => { input.value += c; input.fire('input'); });
-        out.push([chips, commits, ctl.get().commander]);            // typing: nothing started
-        input.fire('keydown', { key: 'a' }); out.push(commits);     // other keys: nothing
-        input.fire('keydown', { key: 'Enter', preventDefault() { prevented++; } }); out.push([commits, prevented]);
-        input.fire('blur'); out.push(commits);
+        const out = [input.value, cz.get(), input.maxLength];
+        'Nicol   Bolas'.split('').forEach((c) => { input.value += c; input.fire('input'); });   // typing
+        out.push([chips, seen.length, cz.get()]);                                              // nothing started
+        input.fire('keydown', { key: 'a' }); out.push(seen.length);                             // other keys: nothing
+        let prevented = 0;
+        input.fire('keydown', { key: 'Enter', preventDefault() { prevented++; } }); out.push([seen.slice(), prevented]);
+        input.fire('blur'); out.push(seen.slice());
+        cz.set('Ugin'); out.push(input.value, cz.get(), seen.length);                          // set() does not notify
+        out.push(root.find((n) => n.textContent).map((n) => n.textContent));
         console.log(JSON.stringify(out));
         """
-        out = subprocess.run(["node", "-e", script], cwd=ROOT, capture_output=True, text=True, check=True)
-        self.assertEqual(json.loads(out.stdout), [[0, 0, "Atraxa"], 0, [1, 1], 2])
+        out = json.loads(subprocess.run(["node", "-e", script], cwd=ROOT, capture_output=True, text=True, check=True).stdout)
+        self.assertEqual(out[:3], ["Atraxa x", "Atraxa x", 100])  # the starting name is cleaned, not committed
+        self.assertEqual(out[3], [0, 0, "Atraxa xNicol Bolas"])  # typing starts nothing (the field kept its start text)
+        self.assertEqual(out[4], 0)
+        self.assertEqual(out[5], [["Atraxa xNicol Bolas"], 1])  # Enter commits and does not submit the form
+        self.assertEqual(out[6], ["Atraxa xNicol Bolas", "Atraxa xNicol Bolas"])  # blur commits too; the page ignores an unchanged name
+        self.assertEqual(out[7:10], ["Ugin", "Ugin", 2])
+        self.assertEqual(out[10], ["Command zone", "Commander (optional)", "Must be a card that can be your commander."])
 
     def test_filter_edits_run_one_search_after_the_last_one(self):
         script = r"""

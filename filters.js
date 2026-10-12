@@ -1,4 +1,5 @@
-// Filters shared by index.html and results.html: color chips, card-type chips, optional commander (contract: API.md).
+// Shared by index.html and results.html: color and card-type chips (mount) and the optional commander in its own
+// "Command zone" box (mountCommander). Contract: API.md.
 // Pure helpers are tested through node (tests/test_helpers.py); mount() builds the controls.
 const TaleforgeFilters = (() => {
   const COLORS = [['W', 'White'], ['U', 'Blue'], ['B', 'Black'], ['R', 'Red'], ['G', 'Green']];
@@ -10,12 +11,13 @@ const TaleforgeFilters = (() => {
   const list = (p, k) => (p.get(k) || '').split(',').map((s) => s.trim()).filter(Boolean);
 
   const empty = () => ({ colors: [], types: [], commander: '' });
+  const cleanName = (s) => s.split(/\s+/).filter(Boolean).join(' ').slice(0, MAX_COMMANDER);
 
   // ?colors=W,U (or C alone for colorless), ?types=Creature,Instant, ?commander=Name. Unknown values are dropped.
   const fromParams = (p) => {
     const raw = list(p, 'colors');
     const colors = raw.includes(COLORLESS) ? [COLORLESS] : inOrder(LETTERS, raw);
-    const commander = (p.get('commander') || '').split(/\s+/).filter(Boolean).join(' ').slice(0, MAX_COMMANDER);
+    const commander = cleanName(p.get('commander') || '');
     return { colors, types: inOrder(TYPES, list(p, 'types')), commander };
   };
 
@@ -56,11 +58,9 @@ const TaleforgeFilters = (() => {
     return n;
   };
 
-  // Builds the controls inside root and returns { get, set }. onChange runs after every chip click.
-  // The commander field only calls onCommit (default: onChange) on Enter or blur, never while typing;
-  // with an onCommit, Enter does not submit the form.
-  const mount = (root, initial, onChange = () => {}, onCommit) => {
-    let state = { ...empty(), ...initial };
+  // Builds the chips inside root and returns { get, set } for { colors, types }. onChange runs after every chip click.
+  const mount = (root, initial, onChange = () => {}) => {
+    let state = { colors: [], types: [], ...initial };
     const group = (title, ...kids) => {
       const fs = el('fieldset', 'filter-group');
       fs.append(el('legend', 'label', title), ...kids);
@@ -79,29 +79,35 @@ const TaleforgeFilters = (() => {
     ];
     const typeBtns = TYPES.map((t) => toggle(t, null, () => state.types.includes(t), () => { state.types = toggleType(state.types, t); }));
     const row = (btns) => { const r = el('div', 'chip-row'); r.append(...btns.map((x) => x.b)); return r; };
+    const paint = () => [...colorBtns, ...typeBtns].forEach(({ b, isOn }) => b.setAttribute('aria-pressed', String(isOn())));
+    root.append(group('Colors', row(colorBtns)), group('Card types', row(typeBtns)));
+    const set = (f) => { state = { colors: f.colors || [], types: f.types || [] }; paint(); };
+    set(state);
+    return { get: () => ({ colors: [...state.colors], types: [...state.types] }), set };
+  };
+
+  // Builds the "Command zone" box inside root (the commander is not a filter) and returns { get, set }.
+  // The field never searches while you type: onCommit(name) runs on Enter (which does not submit the form) or
+  // on blur. get() is the typed name; the caller decides whether it changed.
+  const mountCommander = (root, initial = '', onCommit = () => {}) => {
+    let value = cleanName(initial);
     const input = el('input');
     input.type = 'text'; input.name = 'commander'; input.maxLength = MAX_COMMANDER; input.autocomplete = 'off';
     input.placeholder = 'e.g. Atraxa, Praetors’ Voice';
-    input.addEventListener('input', () => { state.commander = input.value.split(/\s+/).filter(Boolean).join(' '); });
+    input.value = value;
+    input.addEventListener('input', () => { value = cleanName(input.value); });
     input.addEventListener('keydown', (e) => {
-      if (e.key !== 'Enter' || !onCommit) return;
+      if (e.key !== 'Enter') return;
       e.preventDefault();
-      onCommit(state);
+      onCommit(value);
     });
-    input.addEventListener('blur', () => (onCommit || onChange)(state));
+    input.addEventListener('blur', () => onCommit(value));
     const field = el('label', 'field');
     field.append(el('span', 'label', 'Commander (optional)'), input);
-    const paint = () => [...colorBtns, ...typeBtns].forEach(({ b, isOn }) => b.setAttribute('aria-pressed', String(isOn())));
-    root.append(
-      group('Colors', row(colorBtns)),
-      group('Card types', row(typeBtns)),
-      field,
-    );
-    const set = (f) => { state = { ...empty(), ...f }; input.value = state.commander; paint(); };
-    set(state);
-    return { get: () => ({ colors: [...state.colors], types: [...state.types], commander: state.commander }), set };
+    root.append(el('span', 'label', 'Command zone'), field, el('span', 'note', 'Must be a card that can be your commander.'));
+    return { get: () => value, set: (v) => { value = cleanName(v); input.value = value; } };
   };
 
-  return { COLORS, TYPES, COLORLESS, MAX_COMMANDER, empty, fromParams, toParams, body, toggleColor, toggleType, chips, mount };
+  return { COLORS, TYPES, COLORLESS, MAX_COMMANDER, empty, fromParams, toParams, body, toggleColor, toggleType, chips, mount, mountCommander };
 })();
 if (typeof module !== 'undefined') module.exports = TaleforgeFilters;
