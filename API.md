@@ -48,6 +48,7 @@ Response 200:
 ```
 
 - `chips`: how the request was read (parsed intent), ready to show as labels.
+- `characters`: optional list, see Characters below. Sent with the `understood` event and in the full body (also in the `empty` body when the request named characters).
 - `types`: the card's types from the list above (empty if unknown). `color_identity`: letters in W, U, B, R, G order; an empty list is colorless.
 - `evidence`: a list set by the engine, not the browser. It holds `lore` (the card's name matches a requested character, or it has a lore link to the request) and/or `synergy` (often played with the seed cards in real decks). A card with both lists both; there is no combined value. An empty list means the card came only from embedding similarity.
 - `scores`: the ranker's normalized signals (0 to 1) and the weighted `total` (includes the name-match boost).
@@ -75,13 +76,29 @@ When the request has a `commander` that is found, the response body also has a t
 - In the stream, `commander_card` is sent with the `understood` event (right after the commander is looked up) and again in the `done` body. The `empty` 200 body carries it too when the commander was found.
 - It is part of the cache key through the `commander` request field.
 
+### Characters
+
+Each entry says how a named character figures in the request:
+
+```json
+{"characters": [
+  {"name": "Nicol Bolas", "role": "opposed", "story_event": "downfall", "seen_from": "those who defeated him"}
+]}
+```
+
+- `name`: string, the character as named in the request.
+- `role`: one of `central` (the deck is about this character), `opposed` (the request is about this character's downfall, defeat, death, or standing against them) or `allied`. Always present. An old client can treat an unknown value as `central`.
+- `story_event`: optional string, the story event the request points at (for example `downfall`). Omitted when the request names none.
+- `seen_from`: optional short label for the point of view the results take (for example `those who defeated him`). Omitted when `role` is `central` or `allied` and there is nothing to say. The page can show it next to the character chip.
+- For `opposed`, the results favor the people who opposed the character in that event, and at most 2 of the 30 cards are the character's own.
+
 ## POST /api/search?stream=1
 
 Used by the site (`app.js`). Same request body. The response is `text/event-stream` with these events, in this order:
 
 | event | data |
 |---|---|
-| `understood` | `{"chips": [...]}` after the request is parsed, plus `commander_card` when a commander was found |
+| `understood` | `{"chips": [...], "characters": [...]}` after the request is parsed (see Characters), plus `commander_card` when a commander was found |
 | `cards` | `{"cards": [...]}` the ranked candidates (up to 30, after the filters), same card fields without `reason` and `source_urls` |
 | `explanation` | `{"index", "title", "explanation", "cards"}` one per group as it is written; `index` is the group's place in the final list |
 | `done` | the full non-stream response body (may carry `error: "empty"`) |
