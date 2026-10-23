@@ -277,6 +277,59 @@ body > :not(.stars):not(.embers) { position: relative; z-index: 1; }
 .examples .btn { font-family: var(--font-lore); font-style: italic; font-weight: 400; font-size: 14px; }
 .examples .btn::before { content: "✦"; color: var(--gold); font-style: normal; font-size: 10px; }
 
+/* Legends flanking the portal (wide screens only). Whole cards, never cropped. */
+.flank {
+  position: absolute; top: 150px; width: 200px; height: auto; border-radius: 4.75% / 3.5%; display: none;
+  box-shadow: 0 0 0 1px var(--border-strong), 0 30px 60px -20px rgba(0, 0, 0, .9), 0 0 50px -10px var(--aura);
+  transform: rotate(var(--rot)); animation: tf-float 7s ease-in-out infinite;
+}
+.flank-left { left: -250px; --aura: rgba(154, 124, 245, .7); }
+.flank-right { right: -250px; --aura: rgba(76, 201, 195, .6); animation-delay: -3.5s; }
+@keyframes tf-float { 0%, 100% { transform: translateY(0) rotate(var(--rot)); } 50% { transform: translateY(-18px) rotate(calc(var(--rot) * .6)); } }
+@media (min-width: 1380px) { .flank { display: block; } }
+
+/* Legends wheel: a 3D ring of character cards. Hover or focus stops it. */
+.legends { max-width: 1100px; margin: 56px auto 0; padding: 0 24px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+.legends h2 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: clamp(24px, 3vw, 32px); letter-spacing: .04em; }
+.carousel {
+  --w: 210px; --r: 520px;
+  position: relative; width: 100vw; height: calc(var(--w) * 1.4 + 120px); margin-top: 8px;
+  display: flex; align-items: center; justify-content: center; perspective: 1500px; overflow: hidden;
+}
+.carousel::after {
+  content: ""; position: absolute; left: 50%; bottom: 18px; width: min(900px, 90vw); height: 60px; transform: translateX(-50%);
+  border-radius: 50%; background: radial-gradient(closest-side, rgba(217, 180, 90, .28), transparent); filter: blur(6px);
+}
+.ring-tilt { transform-style: preserve-3d; transform: rotateX(-6deg); }
+.ring {
+  position: relative; width: var(--w); aspect-ratio: 488 / 680; transform-style: preserve-3d;
+  animation: tf-orbit 60s linear infinite;
+}
+.carousel:hover .ring, .ring:focus-within { animation-play-state: paused; }
+@keyframes tf-orbit { from { transform: translateZ(calc(var(--r) * -1)) rotateY(0); } to { transform: translateZ(calc(var(--r) * -1)) rotateY(-360deg); } }
+.legend {
+  position: absolute; inset: 0; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 4.75% / 3.5%;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  transform: rotateY(calc(var(--i) * 360deg / var(--n))) translateZ(var(--r));
+  transition: transform .4s var(--ease), filter .4s;
+}
+.legend img {
+  display: block; width: 100%; height: auto; border-radius: inherit;
+  box-shadow: 0 0 0 1px var(--border-strong), 0 20px 40px -16px rgba(0, 0, 0, .9);
+  transition: box-shadow .4s;
+}
+.legend:hover, .legend:focus-visible { transform: rotateY(calc(var(--i) * 360deg / var(--n))) translateZ(calc(var(--r) + 50px)) translateY(-8px); outline: none; }
+.legend:hover img, .legend:focus-visible img { box-shadow: 0 0 0 2px var(--gold), 0 0 40px 0 rgba(217, 180, 90, .7), 0 20px 40px -16px rgba(0, 0, 0, .9); }
+@media (max-width: 720px) { .carousel { --w: 130px; --r: 320px; } }
+/* Without motion the wheel becomes a flat row you can scroll. */
+@media (prefers-reduced-motion: reduce) {
+  .carousel { height: auto; perspective: none; overflow-x: auto; justify-content: flex-start; padding: 16px; }
+  .carousel::after { display: none; }
+  .ring-tilt, .ring { transform: none; transform-style: flat; }
+  .ring { display: flex; gap: 16px; width: auto; aspect-ratio: auto; }
+  .legend, .legend:hover, .legend:focus-visible { position: static; flex: 0 0 var(--w); transform: none; }
+}
+
 /* Planes marquee. */
 .planes {
   position: relative; overflow: hidden; margin: 48px auto 0; max-width: 1100px; padding: 16px 0;

@@ -88,7 +88,7 @@ I review it and merge it. Please don't push to `main` directly.
 - `API.md` is the contract. Change it first, in a pull request, before changing what the page expects.
 - No Wizards logos or trademarks. No Wizards video, music or art. No Scryfall logo.
 - No wording that implies Wizards, Scryfall or Moxfield endorses the site.
-- Card images only from the API, uncropped, with the artist line visible.
+- Card images only from cards.scryfall.io, uncropped, with the artist line visible: from the API, plus the fixed legend cards on the home page.
 - No external requests except card images from cards.scryfall.io.
 - The `design*/` folders are reference exports from Claude Design and are not shipped.
 - Fonts are self-hosted in `fonts/`. No Google Fonts call may remain.

@@ -30,6 +30,9 @@
 
 <main class="home">
   <div class="hero">
+    <!-- Two legends flank the portal on wide screens: whole card images from Scryfall, artist line visible. -->
+    <img class="flank flank-left" src="https://cards.scryfall.io/normal/front/c/5/c5408607-af8f-48fe-bc40-32828d1976de.jpg?1783913282" alt="" width="488" height="680" style="--rot:-8deg" title="Nicol Bolas, Dragon-God · art by Raymond Swanland">
+    <img class="flank flank-right" src="https://cards.scryfall.io/normal/front/9/c/9c017fa9-7021-417a-9c2e-3df409644fcf.jpg?1783930748" alt="" width="488" height="680" style="--rot:8deg" title="Ugin, the Spirit Dragon · art by Raymond Swanland">
     <div class="stage">
       <!-- The planar portal: original SVG/CSS art. The five orbs sit where the colors sit on the color pie. -->
       <div class="portal" aria-hidden="true">
@@ -88,6 +91,54 @@
       <button type="button" class="btn btn-secondary btn-sm" data-example>A War of the Spark rivalry deck</button>
     </div>
   </div>
+
+  <section class="legends" aria-labelledby="legends-title">
+    <span class="label kicker">Legends of the multiverse</span>
+    <h2 id="legends-title">Start from a legend</h2>
+    <p class="note">Pick a planeswalker to start your idea.</p>
+    <div class="carousel">
+      <div class="ring-tilt">
+        <div class="ring" style="--n:12">
+          <button type="button" class="legend" style="--i:0" data-idea="A deck built around Nicol Bolas, the Elder Dragon" aria-label="Start with: A deck built around Nicol Bolas, the Elder Dragon">
+            <img src="https://cards.scryfall.io/normal/front/c/5/c5408607-af8f-48fe-bc40-32828d1976de.jpg?1783913282" alt="" width="488" height="680" loading="lazy" title="Nicol Bolas, Dragon-God · art by Raymond Swanland">
+          </button>
+          <button type="button" class="legend" style="--i:1" data-idea="A deck about Liliana&#x27;s pact with the demons" aria-label="Start with: A deck about Liliana&#x27;s pact with the demons">
+            <img src="https://cards.scryfall.io/normal/front/c/b/cb28d217-795e-4320-a032-cd713f7ecc8a.jpg?1783909073" alt="" width="488" height="680" loading="lazy" title="Liliana, Dreadhorde General · art by Chris Rallis">
+          </button>
+          <button type="button" class="legend" style="--i:2" data-idea="A Jace Beleren mind-games deck" aria-label="Start with: A Jace Beleren mind-games deck">
+            <img src="https://cards.scryfall.io/normal/front/c/8/c8817585-0d32-4d56-9142-0d29512e86a9.jpg?1783930196" alt="" width="488" height="680" loading="lazy" title="Jace, the Mind Sculptor · art by Jason Chan">
+          </button>
+          <button type="button" class="legend" style="--i:3" data-idea="A Chandra Nalaar fire-and-fury deck" aria-label="Start with: A Chandra Nalaar fire-and-fury deck">
+            <img src="https://cards.scryfall.io/normal/front/4/0/40cb22c8-cb03-45c9-bb0e-b8cabdcc43cd.jpg?1788329325" alt="" width="488" height="680" loading="lazy" title="Chandra, Torch of Defiance · art by Kieran Yanner">
+          </button>
+          <button type="button" class="legend" style="--i:4" data-idea="A deck about Gideon&#x27;s sacrifice" aria-label="Start with: A deck about Gideon&#x27;s sacrifice">
+            <img src="https://cards.scryfall.io/normal/front/4/1/41326ca6-f815-4af7-b022-67db127bc125.jpg?1783913347" alt="" width="488" height="680" loading="lazy" title="Gideon Blackblade · art by Viktor Titov">
+          </button>
+          <button type="button" class="legend" style="--i:5" data-idea="A deck about Ugin and the Eldrazi" aria-label="Start with: A deck about Ugin and the Eldrazi">
+            <img src="https://cards.scryfall.io/normal/front/9/c/9c017fa9-7021-417a-9c2e-3df409644fcf.jpg?1783930748" alt="" width="488" height="680" loading="lazy" title="Ugin, the Spirit Dragon · art by Raymond Swanland">
+          </button>
+          <button type="button" class="legend" style="--i:6" data-idea="A Teferi time-bending deck" aria-label="Start with: A Teferi time-bending deck">
+            <img src="https://cards.scryfall.io/normal/front/5/d/5d10b752-d9cb-419d-a5c4-d4ee1acb655e.jpg?1783934963" alt="" width="488" height="680" loading="lazy" title="Teferi, Hero of Dominaria · art by Chris Rallis">
+          </button>
+          <button type="button" class="legend" style="--i:7" data-idea="A Sorin Markov vampire deck" aria-label="Start with: A Sorin Markov vampire deck">
+            <img src="https://cards.scryfall.io/normal/front/3/5/354fe9bd-4ec8-409c-8ce5-b29393f3d169.jpg?1783933388" alt="" width="488" height="680" loading="lazy" title="Sorin, Vengeful Bloodlord · art by Tommy Arnold">
+          </button>
+          <button type="button" class="legend" style="--i:8" data-idea="A Nissa Revane deck about Zendikar&#x27;s fury" aria-label="Start with: A Nissa Revane deck about Zendikar&#x27;s fury">
+            <img src="https://cards.scryfall.io/normal/front/f/8/f857bbe4-5619-4733-a0c7-69700f2ef4f3.jpg?1783933410" alt="" width="488" height="680" loading="lazy" title="Nissa, Who Shakes the World · art by Chris Rallis">
+          </button>
+          <button type="button" class="legend" style="--i:9" data-idea="An Ajani Goldmane deck about his fall to Phyrexia" aria-label="Start with: An Ajani Goldmane deck about his fall to Phyrexia">
+            <img src="https://cards.scryfall.io/normal/front/4/a/4a30bcfa-6f95-450f-aea7-885983d7c6a5.jpg?1783939407" alt="" width="488" height="680" loading="lazy" title="Ajani, Mentor of Heroes · art by Aaron Miller">
+          </button>
+          <button type="button" class="legend" style="--i:10" data-idea="A Karn, the silver golem deck" aria-label="Start with: A Karn, the silver golem deck">
+            <img src="https://cards.scryfall.io/normal/front/4/b/4b0c6662-4dde-40a2-97e0-0318478c0367.jpg?1783930222" alt="" width="488" height="680" loading="lazy" title="Karn Liberated · art by Jason Chan">
+          </button>
+          <button type="button" class="legend" style="--i:11" data-idea="An Elspeth Tirel deck about her fight for Theros" aria-label="Start with: An Elspeth Tirel deck about her fight for Theros">
+            <img src="https://cards.scryfall.io/normal/front/a/9/a91d9163-c1f2-4eae-acab-5dabbc71d7d4.jpg?1789613307" alt="" width="488" height="680" loading="lazy" title="Elspeth, Sun&#x27;s Champion · art by Eric Deschamps">
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <div class="planes" aria-hidden="true">
     <div class="planes-track">
@@ -149,6 +200,12 @@
   q.addEventListener('keydown', (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); form.requestSubmit(); }
   });
+  // A legend fills in its idea and brings the search box back into view.
+  document.querySelectorAll('[data-idea]').forEach((b) => b.addEventListener('click', () => {
+    q.value = b.dataset.idea; hint.hidden = true;
+    form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    q.focus({ preventScroll: true });
+  }));
   document.querySelectorAll('[data-example]').forEach((b) => b.addEventListener('click', () => {
     q.value = b.textContent; hint.hidden = true; q.focus();
   }));
