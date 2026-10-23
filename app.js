@@ -139,6 +139,9 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
   $('filters').addEventListener('submit', update);
   $('filters-reset').addEventListener('click', () => { filterControls.set(TaleforgeFilters.empty()); later(); });
 
+  // On narrow screens the aside stacks above the results, so its long filter panel starts folded.
+  if (matchMedia('(max-width: 1000px)').matches) $('refine').open = false;
+
   // ---- rendering ----
   const setStep = (k) => [...$('steps').children].forEach((li, i) => {
     li.className = i < k ? 'done' : i === k ? 'active' : '';
@@ -162,7 +165,7 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
     }
     const ci = c.color_identity || [];
     const colors = el('div', 'chips');
-    colors.append(...(ci.length ? ci : ['Colorless']).map((x) => el('span', 'chip', x)));
+    colors.append(...(ci.length ? ci : ['Colorless']).map((x) => el('span', 'pip pip-' + x[0], x)));
     const text = el('div', 'commander-text');
     text.append(el('span', 'label', 'Command zone'), el('h2', null, c.name), el('span', 'label', 'Color identity'), colors);
     if (c.scryfall_url) text.append(link(c.scryfall_url, 'Scryfall', 'src'));

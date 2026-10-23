@@ -24,11 +24,13 @@ Press Ctrl+C in Terminal to stop the server.
 | `results.html` | Results page |
 | `compare.html` | Puts the two dark tones side by side |
 | `v-lifted/`, `v-blackout/` | Static previews of the two dark tones, with their own `app.css` |
-| `app.css` | Styles for the home and results pages |
+| `app.css` | Styles for the home and results pages (own tokens, dark "obsidian" and light "parchment") |
+| `fx.js` | Decorative motion: rising embers canvas and the foil tilt on card art; off under reduced motion |
+| `fonts/` | Self-hosted Cinzel, Spectral and Manrope (SIL Open Font License) |
 | `app.js` | Results page behaviour: runs the search and shows each step as it arrives |
 | `filters.js` | The filter chips (colors, card types), the "Command zone" commander box, and their URL and request helpers, used by both pages |
 | `footer.js` | Footer on every page: privacy line, disclaimer, credits |
-| `theme.js` | Light/dark and tone switches |
+| `theme.js` | Light/dark switch (the tone switch is only used by the `v-*` previews) |
 | `sample_result.js` | Placeholder search result used by the static previews |
 | `disclaimer.txt` | The footer disclaimer, word for word |
 | `design/`, `design-dark/`, `design-blackout/` | Reference exports from Claude Design: the design system (`_ds/`, colour, type and spacing tokens) and the full design file `Taleforge.dc.html`. Not shipped. |
@@ -89,7 +91,7 @@ I review it and merge it. Please don't push to `main` directly.
 - Card images only from the API, uncropped, with the artist line visible.
 - No external requests except card images from cards.scryfall.io.
 - The `design*/` folders are reference exports from Claude Design and are not shipped.
-- Self-hosting the fonts (Spectral, Manrope, Space Mono) is task one for the designer. After that, no Google Fonts call may remain.
+- Fonts are self-hosted in `fonts/`. No Google Fonts call may remain.
 - The footer disclaimer comes from `disclaimer.txt` and must not be reworded or edited.
 - Free access: no login, payment or email gate.
 - Respect `prefers-reduced-motion`.

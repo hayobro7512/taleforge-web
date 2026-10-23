@@ -5,19 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Taleforge</title>
 <meta name="description" content="Describe a Magic: The Gathering Commander deck idea and get cards grouped into themes, with short explanations and sources.">
+<link rel="preload" href="fonts/cinzel-normal-500-800.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="app.css">
 <script src="theme.js"></script>
 </head>
 <body>
-<div class="stars bg-stars" aria-hidden="true"></div>
+<div class="stars" aria-hidden="true"></div>
 
 <header class="site-header">
   <div class="brand">
-    <a class="wordmark" href="index.html">Taleforge</a>
+    <a class="wordmark" href="index.html">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><circle cx="12" cy="12" r="10.5"/><polygon points="12,3 17.29,19.28 3.44,9.22 20.56,9.22 6.71,19.28" stroke-linejoin="round"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>
+      Taleforge
+    </a>
     <span class="badge">Beta</span>
   </div>
   <div class="header-actions">
-    <button type="button" class="tone-toggle">Lifted</button>
     <button type="button" class="theme-toggle" aria-label="Toggle theme">
       <svg class="moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
       <svg class="sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
@@ -26,13 +29,46 @@
 </header>
 
 <main class="home">
-  <div class="grid bg-grid" aria-hidden="true"></div>
   <div class="hero">
-    <span class="label">Free · no account · for Commander players</span>
-    <h1>Describe your deck idea.<br>We'll find the cards.</h1>
-    <p class="lede">A character, a guild, a storyline. Taleforge groups Commander-legal cards into themes, explains each group, and links the sources it used.</p>
+    <div class="stage">
+      <!-- The planar portal: original SVG/CSS art. The five orbs sit where the colors sit on the color pie. -->
+      <div class="portal" aria-hidden="true">
+        <div class="portal-glow"></div>
+        <div class="portal-ring"></div>
+        <svg class="portal-sigil" viewBox="0 0 200 200" fill="none" stroke="currentColor">
+          <defs>
+            <radialGradient id="o-w" cx="35%" cy="30%"><stop offset="0" stop-color="#fffdf2"/><stop offset=".6" stop-color="#f1e3b4"/><stop offset="1" stop-color="#a8935a"/></radialGradient>
+            <radialGradient id="o-u" cx="35%" cy="30%"><stop offset="0" stop-color="#b9dcff"/><stop offset=".6" stop-color="#3f8be0"/><stop offset="1" stop-color="#173f72"/></radialGradient>
+            <radialGradient id="o-b" cx="35%" cy="30%"><stop offset="0" stop-color="#a89aae"/><stop offset=".6" stop-color="#4a3f4e"/><stop offset="1" stop-color="#140f17"/></radialGradient>
+            <radialGradient id="o-r" cx="35%" cy="30%"><stop offset="0" stop-color="#ffc2a8"/><stop offset=".6" stop-color="#e14b32"/><stop offset="1" stop-color="#6e1a0e"/></radialGradient>
+            <radialGradient id="o-g" cx="35%" cy="30%"><stop offset="0" stop-color="#b7f0c4"/><stop offset=".6" stop-color="#2f9a58"/><stop offset="1" stop-color="#0f4426"/></radialGradient>
+            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <circle cx="100" cy="100" r="98" stroke-width="3" stroke-dasharray=".6 2.9" opacity=".6"/>
+          <circle cx="100" cy="100" r="94" stroke-width=".4"/>
+          <circle cx="100" cy="100" r="60" stroke-width=".4" opacity=".6"/>
+          <g class="slow">
+            <circle cx="100" cy="100" r="88" stroke-width=".6" stroke-dasharray="10 3 2 3" opacity=".7"/>
+            <polygon points="100.0,20.0 176.1,75.3 147.0,164.7 53.0,164.7 23.9,75.3" stroke-width=".5" opacity=".5"/>
+            <polygon points="100.0,20.0 147.0,164.7 23.9,75.3 176.1,75.3 53.0,164.7" stroke-width=".45" opacity=".35"/>
+          </g>
+          <g stroke="none" filter="url(#glow)">
+            <circle cx="100" cy="20" r="7" fill="url(#o-w)"/>
+            <circle cx="176.1" cy="75.3" r="7" fill="url(#o-u)"/>
+            <circle cx="147" cy="164.7" r="7" fill="url(#o-b)"/>
+            <circle cx="53" cy="164.7" r="7" fill="url(#o-r)"/>
+            <circle cx="23.9" cy="75.3" r="7" fill="url(#o-g)"/>
+          </g>
+        </svg>
+      </div>
 
-    <form class="search" action="results.html" method="get">
+      <span class="label kicker">Free · no account · for Commander players</span>
+      <h1>Speak your tale.<br><span class="gilded">The multiverse answers.</span></h1>
+      <p class="lede">Name a character, a guild, a storyline. Taleforge gathers Commander-legal cards into themes, tells you why each one belongs, and links the lore it drew from.</p>
+    </div>
+
+    <form class="search frame" action="results.html" method="get">
+      <span class="label">Your deck idea</span>
       <textarea id="q" name="q" aria-label="Your deck idea" rows="3" required placeholder="A deck built around a character, a guild, or a storyline…"></textarea>
       <span class="hint" id="hint" hidden>Describe a deck idea first: a character, a guild, or a story.</span>
       <div class="command-zone" id="command-zone"></div>
@@ -42,21 +78,54 @@
       </details>
       <div class="row">
         <button type="submit" class="btn btn-primary btn-lg">Find cards</button>
-        <span class="kbd" aria-hidden="true">⌘ ↵</span>
-      </div>
-      <div class="examples">
-        <span class="label">Try</span>
-        <button type="button" class="btn btn-secondary btn-sm" data-example>Give me a deck built around Nicol Bolas and Ugin</button>
-        <button type="button" class="btn btn-secondary btn-sm" data-example>A deck about Liliana's betrayal of Bolas</button>
-        <button type="button" class="btn btn-secondary btn-sm" data-example>A War of the Spark rivalry deck</button>
+        <span class="kbd" aria-hidden="true">or ⌘ ↵</span>
       </div>
     </form>
+    <div class="examples">
+      <span class="label">Try</span>
+      <button type="button" class="btn btn-secondary btn-sm" data-example>Give me a deck built around Nicol Bolas and Ugin</button>
+      <button type="button" class="btn btn-secondary btn-sm" data-example>A deck about Liliana's betrayal of Bolas</button>
+      <button type="button" class="btn btn-secondary btn-sm" data-example>A War of the Spark rivalry deck</button>
+    </div>
   </div>
+
+  <div class="planes" aria-hidden="true">
+    <div class="planes-track">
+      <span>Ravnica</span><span>Dominaria</span><span>Innistrad</span><span>Zendikar</span><span>Kaladesh</span><span>Amonkhet</span><span>Theros</span><span>Ixalan</span><span>Eldraine</span><span>Kamigawa</span><span>Tarkir</span><span>Alara</span><span>Mirrodin</span><span>Lorwyn</span><span>Strixhaven</span><span>Kaldheim</span>
+      <span>Ravnica</span><span>Dominaria</span><span>Innistrad</span><span>Zendikar</span><span>Kaladesh</span><span>Amonkhet</span><span>Theros</span><span>Ixalan</span><span>Eldraine</span><span>Kamigawa</span><span>Tarkir</span><span>Alara</span><span>Mirrodin</span><span>Lorwyn</span><span>Strixhaven</span><span>Kaldheim</span>
+    </div>
+  </div>
+
+  <section class="how" aria-labelledby="how-title">
+    <span class="label kicker">How it works</span>
+    <h2 id="how-title">From a story to the cards that tell it</h2>
+    <div class="how-grid">
+      <div class="how-step" style="--c: var(--side-violet)">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M38 6C24 10 15 22 12 38l4-2c3-9 9-16 16-20-5 5-9 11-11 18 9-4 15-14 17-28z"/><path d="M8 42l6-6"/></svg>
+        <span class="num">I</span>
+        <h3>Speak your tale</h3>
+        <p>Describe the deck the way you’d tell it at the table: a planeswalker’s fall, a guild’s war, a plane you love.</p>
+      </div>
+      <div class="how-step" style="--c: var(--side-teal)">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="12" width="18" height="26" rx="2" transform="rotate(-12 16 25)"/><rect x="15" y="10" width="18" height="26" rx="2"/><rect x="23" y="12" width="18" height="26" rx="2" transform="rotate(12 32 25)"/><path d="M24 19l1.6 3.4 3.4 1.6-3.4 1.6L24 29l-1.6-3.4-3.4-1.6 3.4-1.6z"/></svg>
+        <span class="num">II</span>
+        <h3>The cards gather</h3>
+        <p>Taleforge weighs story links and real-deck synergy, then sorts the best Commander-legal cards into themes.</p>
+      </div>
+      <div class="how-step" style="--c: var(--side-amber)">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M24 12c-5-3-11-4-17-3v28c6-1 12 0 17 3 5-3 11-4 17-3V9c-6-1-12 0-17 3z"/><path d="M24 12v28M12 17c3 0 6 .5 8 1.5M12 23c3 0 6 .5 8 1.5M28 18.5c2-1 5-1.5 8-1.5M28 24.5c2-1 5-1.5 8-1.5"/></svg>
+        <span class="num">III</span>
+        <h3>Read the lore</h3>
+        <p>Every theme explains itself, and every card links back to the story sources it came from. No guessing.</p>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer class="site-footer"></footer>
 <script src="footer.js"></script>
 <script src="filters.js"></script>
+<script src="fx.js"></script>
 
 <script>
   const form = document.querySelector('.search');
