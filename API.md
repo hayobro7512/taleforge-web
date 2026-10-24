@@ -39,7 +39,8 @@ Response 200:
           "reason": "string",
           "evidence": ["lore", "synergy"],
           "scores": {"story": 1.0, "synergy": 0.42, "similarity": 0.31, "total": 1.05},
-          "source_urls": ["https://example.com/placeholder-source-1"]
+          "source_urls": ["https://example.com/placeholder-source-1"],
+          "source_titles": ["The Elder Dragon Returns"]
         }
       ]
     }
@@ -53,6 +54,7 @@ Response 200:
 - `evidence`: a list set by the engine, not the browser. It holds `lore` (the card's name matches a requested character, or it has a lore link to the request) and/or `synergy` (often played with the seed cards in real decks). A card with both lists both; there is no combined value. An empty list means the card came only from embedding similarity.
 - `scores`: the ranker's normalized signals (0 to 1) and the weighted `total` (includes the name-match boost).
 - `source_urls`: lore sources that ground `reason`; empty for a purely mechanical reason.
+- `source_titles`: the article title of each source, same length and order as `source_urls`; an entry is `null` when the title is not known. An old engine may leave the field out; the page then makes a label from the URL.
 - `image_url`, `scryfall_url` can be null.
 - `commander_card`: optional, see below. Present only when a `commander` was sent and found. It is never one of the recommended cards.
 
@@ -99,7 +101,7 @@ Used by the site (`app.js`). Same request body. The response is `text/event-stre
 | event | data |
 |---|---|
 | `understood` | `{"chips": [...], "characters": [...]}` after the request is parsed (see Characters), plus `commander_card` when a commander was found |
-| `cards` | `{"cards": [...]}` the ranked candidates (up to 30, after the filters), same card fields without `reason` and `source_urls` |
+| `cards` | `{"cards": [...]}` the ranked candidates (up to 30, after the filters), same card fields without `reason`, `source_urls` and `source_titles` |
 | `explanation` | `{"index", "title", "explanation", "cards"}` one per group as it is written; `index` is the group's place in the final list |
 | `done` | the full non-stream response body (may carry `error: "empty"`) |
 | `error` | `{"error", "message"}` if the engine fails after events started; the stream then ends |
