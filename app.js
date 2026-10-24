@@ -88,6 +88,8 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
     return a;
   };
   const { sourceLabel } = Taleforge;
+  // The article title from the API (source_titles, same order as source_urls), else a label made from the URL.
+  const titleOf = (c, u) => (c.source_titles || [])[c.source_urls.indexOf(u)] || sourceLabel(u);
   const editHref = () => 'index.html?' + TaleforgeFilters.toParams(filters, new URLSearchParams({ q: query }));
 
   $('idea').textContent = '“' + query + '”';
@@ -197,12 +199,12 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
     }
     const links = el('div', 'links');
     if (c.scryfall_url) links.append(link(c.scryfall_url, 'Scryfall'));
+    const sources = c.source_urls || [];
     const storyLink = (u) => {
       const a = link(u, 'Story');
-      if (safe(u)) a.title = sourceLabel(u);
+      if (safe(u)) a.title = titleOf(c, u);
       return a;
     };
-    const sources = c.source_urls || [];
     links.append(...sources.slice(0, SHOWN_SOURCES).map(storyLink));
     const rest = sources.slice(SHOWN_SOURCES);
     if (rest.length) {
@@ -232,7 +234,8 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
       const sources = [...new Set(g.cards.flatMap((c) => c.source_urls || []))];
       const prov = el('div', 'provenance');
       prov.append(el('em', null, sources.length ? 'Written by AI from the linked sources.' : 'Written by AI from each card’s rules text.'));
-      sources.forEach((s) => prov.append(link(s, safe(s) ? sourceLabel(s) : s, 'src')));
+      const owner = (s) => g.cards.find((c) => (c.source_urls || []).includes(s));
+      sources.forEach((s) => prov.append(link(s, safe(s) ? titleOf(owner(s), s) : s, 'src')));
       art.append(prov);
     }
     const grid = el('div', 'cards');

@@ -27,7 +27,7 @@ class FixtureKeysTest(unittest.TestCase):
     def test_api_md_lists_the_expected_shape(self):
         self.assertEqual(TOP, {"chips", "intro", "groups"})
         self.assertEqual(CARD, {"name", "image_url", "scryfall_url", "types", "color_identity", "reason", "evidence",
-                                "scores", "source_urls"})
+                                "scores", "source_urls", "source_titles"})
 
     def test_every_fixture_matches_api_md(self):
         files = sorted((ROOT / "fixtures").glob("*.json"))
@@ -37,7 +37,7 @@ class FixtureKeysTest(unittest.TestCase):
             with self.subTest(fixture=path.name):
                 if set(body) == {"cards"}:  # the mock's ranked list: "cards" event fields plus its own commander_eligible
                     for c in body["cards"]:
-                        self.assertEqual(set(c), CARD - {"reason", "source_urls"} | {"commander_eligible"}, c.get("name"))
+                        self.assertEqual(set(c), CARD - {"reason", "source_urls", "source_titles"} | {"commander_eligible"}, c.get("name"))
                         self.assertEqual(set(c["scores"]), SCORES, c["name"])
                 elif "groups" in body:
                     # results, or the 200 "empty" body (results keys plus the error keys)
@@ -46,6 +46,7 @@ class FixtureKeysTest(unittest.TestCase):
                         self.assertEqual(set(g), GROUP)
                         for c in g["cards"]:
                             self.assertEqual(set(c), CARD, c.get("name"))
+                            self.assertEqual(len(c["source_titles"]), len(c["source_urls"]), c["name"])
                             self.assertEqual(set(c["scores"]), SCORES, c["name"])
                 else:
                     self.assertEqual(set(body), ERROR)
