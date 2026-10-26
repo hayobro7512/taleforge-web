@@ -4,6 +4,16 @@ Taleforge is a free website for Magic: The Gathering Commander players. You desc
 
 This repository holds only the website: pages, styles, scripts and design references. The search engine lives somewhere else. A small mock server stands in for it here and answers every search with placeholder data, so you can work on the site without the engine.
 
+## Screenshots
+
+Taken from the mock server, so all text and source links on the results page are placeholders. Card images are replaced by generated placeholder art (no Wizards art is stored in this repository).
+
+![Home page: the search box under the portal](docs/screenshots/home.jpg)
+
+| Results, dark "obsidian" | Results, light "parchment" |
+|---|---|
+| ![Results page, dark theme](docs/screenshots/results-dark.jpg) | ![Results page, light theme](docs/screenshots/results-light.jpg) |
+
 ## Run it
 
 You need Python 3, which macOS already includes. In Terminal:
