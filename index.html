@@ -79,6 +79,10 @@
         <summary>Filters (optional): colors, card types</summary>
         <div class="filter-controls" id="filter-controls"></div>
       </details>
+      <details class="filters-box" id="key-box">
+        <summary>Your own OpenAI key (optional): no daily limit</summary>
+        <div class="key-controls" id="key-controls"></div>
+      </details>
       <div class="row">
         <button type="submit" class="btn btn-primary btn-lg">Find cards</button>
         <span class="kbd" aria-hidden="true">or ⌘ ↵</span>
@@ -176,6 +180,7 @@
 <footer class="site-footer"></footer>
 <script src="footer.js"></script>
 <script src="filters.js"></script>
+<script src="key.js"></script>
 <script src="fx.js"></script>
 
 <script>
@@ -188,6 +193,8 @@
   const initial = TaleforgeFilters.fromParams(start);
   const controls = TaleforgeFilters.mount(document.getElementById('filter-controls'), initial);
   const commander = TaleforgeFilters.mountCommander(document.getElementById('command-zone'), initial.commander);
+  TaleforgeKey.mount(document.getElementById('key-controls'));
+  if (TaleforgeKey.get()) document.getElementById('key-box').open = true;
   if (TaleforgeFilters.chips({ ...initial, commander: '' }).length) document.getElementById('filters-box').open = true;
   form.addEventListener('submit', (e) => {
     e.preventDefault();

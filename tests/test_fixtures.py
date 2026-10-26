@@ -95,10 +95,10 @@ class MockStreamTest(unittest.TestCase):
         cls.httpd.shutdown()
         cls.httpd.server_close()
 
-    def post(self, query, stream=True, **extra):
+    def post(self, query, stream=True, key=None, **extra):
         body = json.dumps({"query": query, "weights": {"story": 0.62}, **extra}).encode()
         req = urllib.request.Request(self.base + "/api/search" + ("?stream=1" if stream else ""), data=body,
-                                     headers={"Content-Type": "application/json"})
+                                     headers={"Content-Type": "application/json", **({"X-OpenAI-Key": key} if key else {})})
         try:
             with urllib.request.urlopen(req) as r:
                 return r.status, r.headers["Content-Type"], r.read().decode()
@@ -116,6 +116,8 @@ class MockStreamTest(unittest.TestCase):
         self.assertEqual(self.events(self.post("error please")[2]), ["understood", "cards", "error"])
         self.assertEqual(self.post("limit")[:2], (429, "application/json"))
         self.assertEqual(self.post("paused")[:2], (503, "application/json"))
+        self.assertEqual(self.post("limit", key="sk-" + "a" * 30)[:2], (200, "text/event-stream"))  # own key skips it
+        self.assertEqual(self.post("badkey", key="sk-" + "a" * 30)[0], 401)
         self.assertEqual(self.post("error", stream=False)[0], 500)
         self.assertEqual(self.post(" ")[0], 400)
 
