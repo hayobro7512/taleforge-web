@@ -527,8 +527,8 @@ body > :not(.stars):not(.embers) { position: relative; z-index: 1; }
   width: 16px; height: 16px; transform: rotate(45deg); border-radius: 3px;
   background: linear-gradient(135deg, var(--gold-hi), var(--gold-deep)); border: 1px solid var(--on-gold); box-shadow: 0 0 10px rgba(217, 180, 90, .8);
 }
-.legend { display: grid; grid-template-columns: auto 1fr; gap: 10px 12px; align-items: center; }
-.legend-wide { grid-column: 1 / -1; }
+.tag-key { display: grid; grid-template-columns: auto 1fr; gap: 10px 12px; align-items: center; }
+.tag-key-wide { grid-column: 1 / -1; }
 .skeleton { pointer-events: none; animation: none; }
 .skeleton .art { position: relative; overflow: hidden; }
 .skeleton .art::before {
