@@ -84,6 +84,7 @@
         <span class="kbd" aria-hidden="true">or ⌘ ↵</span>
       </div>
     </form>
+    <p class="preview-note" id="demo-note" hidden><strong>Demo. </strong>Live search is off here. Pick an example or a legend: each was searched ahead of time with the real engine.</p>
     <div class="examples">
       <span class="label">Try</span>
       <button type="button" class="btn btn-secondary btn-sm" data-example>Give me a deck built around Nicol Bolas and Ugin</button>
@@ -177,8 +178,13 @@
 <script src="footer.js"></script>
 <script src="filters.js"></script>
 <script src="fx.js"></script>
+<script src="demo.js"></script>
 
 <script>
+  if (TaleforgeDemo) {
+    TaleforgeDemo.hide('command-zone', 'filters-box');
+    document.getElementById('demo-note').hidden = false;
+  }
   const form = document.querySelector('.search');
   const q = document.getElementById('q');
   const hint = document.getElementById('hint');
