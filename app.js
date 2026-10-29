@@ -334,12 +334,19 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
       el('span', 'label', 'What usually helps'), tips, row(editButton('btn-primary')));
   };
 
+  // The own-key field; saving a key searches again right away.
+  const keyBox = () => { const d = el('div', 'key-controls'); TaleforgeKey.mount(d, () => { if (TaleforgeKey.get()) search(); }); return d; };
+
   const showError = (status, body) => {
     if (status === 429) {
       showState('Daily limit', 'That’s today’s searches.',
         'Taleforge is free and runs on a small budget, so it allows a limited number of searches each day. There’s no account to upgrade and no paid tier.',
-        banner('warning', 'Daily limit reached', 'Searches reset at midnight, server time. Your idea is kept, so you can search it again then.'),
-        row(editButton('btn-secondary')));
+        banner('warning', 'Daily limit reached', 'Free searches reset at midnight, server time. Your idea is kept, or add your own OpenAI key below to search now.'),
+        keyBox(), row(editButton('btn-secondary')));
+    } else if (status === 401) {
+      showState('Check your key', 'OpenAI didn’t accept that key.',
+        'Check that the key is current and has API access, or remove it to use the free searches.',
+        keyBox(), row(editButton('btn-primary')));
     } else if (status === 503) {
       const idea = el('p', 'idea', '“' + query + '”');
       showState('Paused', 'Search is paused.',
@@ -409,7 +416,7 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
     if (TaleforgeDemo && !demoFile) { showDemoOnly(); return; }
     try {
       const res = demoFile ? await fetch(demoFile, { signal: run.signal }) : await fetch('/api/search?stream=1', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json', ...TaleforgeKey.headers() },
         body: JSON.stringify({ query, weights, ...TaleforgeFilters.body(filters) }), signal: run.signal,
       });
       if (demoFile && !res.ok) { showError(0); return; }

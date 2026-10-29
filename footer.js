@@ -17,7 +17,8 @@
   };
 
   const privacy = el('p', null, 'No account needed. Your idea is sent to OpenAI to read it and write the explanations. ' +
-    'Taleforge doesn’t save it: the server logs only the time, cost and duration of each search, and keeps results in memory until it restarts.');
+    'Taleforge doesn’t save it: the server logs only the time, cost and duration of each search, and keeps results in memory until it restarts. ' +
+    'If you add your own OpenAI key, it stays in your browser and is sent with each search to be used once, never stored or logged.');
   const disclaimer = el('p', 'disclaimer');
   const credits = el('p', 'credits');
   credits.append(

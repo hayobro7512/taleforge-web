@@ -4,7 +4,7 @@ python3 mock_server.py [--port 8000]   -> http://127.0.0.1:8000/
 
 Serves the files in this folder plus POST /api/search (contract in API.md), answering
 from fixtures/. Words in the query pick the state:
-  empty  -> no-results state        limit  -> 429 daily limit
+  empty  -> no-results state        limit  -> 429 daily limit (not with an own key; add "badkey" with one for 401)
   paused -> 503 paused               error  -> engine fails mid-stream (500)
   slow   -> normal results with long delays
 anything else -> normal results. Standard library only.
@@ -195,7 +195,10 @@ class Handler(SimpleHTTPRequestHandler):
         # Errors found before the first event come back as plain JSON with their HTTP status.
         if state == "paused":
             return self._send_json(503, fixture("paused"))
-        if state == "limit":
+        own_key = self.headers.get("X-OpenAI-Key", "").strip()
+        if own_key and "badkey" in query.lower():
+            return self._send_json(401, fixture("invalid_key"))
+        if state == "limit" and not own_key:  # an own key skips the limit
             return self._send_json(429, fixture("limit"))
         events = events_for(state, filters)
         if parse_qs(url.query).get("stream") != ["1"]:

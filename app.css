@@ -633,3 +633,10 @@ body > :not(.stars):not(.embers) { position: relative; z-index: 1; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+/* own OpenAI key */
+.key-controls { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; text-align: left; }
+.key-controls .note { font-size: 13px; color: var(--text-2); margin: 0; }
+.key-controls .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.key-input { flex: 1 1 220px; min-width: 0; padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border, currentColor); background: transparent; color: var(--text); font: inherit; }
+.key-input:focus-visible { outline: none; box-shadow: var(--glow-focus); }

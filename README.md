@@ -1,20 +1,49 @@
-# Taleforge website
+# Taleforge
 
-Taleforge is a free website for Magic: The Gathering Commander players. You describe a deck idea, and it shows matching cards grouped by theme, with a short explanation for each card and links to its sources.
+**Describe a Magic: The Gathering Commander deck idea. Get cards that fit it, grouped by theme, each with a short explanation and a link to the story it came from.**
+
+Taleforge is a free website for Commander players who build around a story instead of a stat line. Type "a deck about Liliana's betrayal of Bolas" or "a War of the Spark rivalry deck" and it finds Commander-legal cards that tie to that character, guild or storyline, and tells you why each one belongs.
 
 **[Try the demo](https://hayobro7512.github.io/taleforge-web/)**: four searches recorded from the real engine. Live search is off in the demo.
 
-This repository holds only the website: pages, styles, scripts and design references. The search engine lives somewhere else. A small mock server stands in for it here and answers every search with placeholder data, so you can work on the site without the engine.
-
-## Screenshots
-
-Taken from the mock server, so all text and source links on the results page are placeholders. Card images are replaced by generated placeholder art (no Wizards art is stored in this repository).
-
 ![Home page: the search box under the portal](docs/screenshots/home.jpg)
+
+## What you get
+
+- **Ideas, not card names.** Name a character, a guild, a storyline, or a feeling like "patient and cruel".
+- **Cards grouped by theme.** Up to 30 cards in themed groups, each with a short written reason and links to its Scryfall page and the lore article behind it.
+- **Lore and Synergy tags.** A card is tagged Lore when it ties to your story and Synergy when real decks play it with the cards you named. One slider changes how much each counts.
+- **Command zone and filters.** Pick a commander to limit the results to its colors, or filter by color and card type.
+- **Light and dark themes.** Obsidian and parchment.
+- **No account, no payment, no email.**
 
 | Results, dark "obsidian" | Results, light "parchment" |
 |---|---|
 | ![Results page, dark theme](docs/screenshots/results-dark.jpg) | ![Results page, light theme](docs/screenshots/results-light.jpg) |
+
+Screenshots come from the mock server, so the text and source links on them are placeholders and the card images are generated.
+
+## Free searches and your own OpenAI key
+
+Searches cost real money, so the free tier is limited: **5 searches per visitor per day**, inside a small daily total for the whole site. Repeat searches are cached and cost nothing.
+
+Want more? Open "Your own OpenAI key" on the home page (or on the "daily limit" page) and paste an OpenAI API key. Then:
+
+- Searches have **no daily limit**. OpenAI bills your account, about a cent per search.
+- The key stays **in your browser** and is sent with each search to be used once. Taleforge never stores or logs it.
+- Remove it any time with the Remove button.
+
+## Your privacy
+
+Your idea is sent to OpenAI to read it and write the explanations. Taleforge doesn't save it: the server logs only the time, cost and duration of each search.
+
+*Taleforge is unofficial Fan Content permitted under the Fan Content Policy. Not approved/endorsed by Wizards. Portions of the materials used are property of Wizards of the Coast. ©Wizards of the Coast LLC.*
+
+---
+
+# For contributors
+
+This repository holds only the website: pages, styles, scripts and design references. The search engine lives somewhere else. A small mock server stands in for it here and answers every search with placeholder data, so you can work on the site without the engine.
 
 ## Run it
 
@@ -43,6 +72,7 @@ A static demo runs on GitHub Pages with no server. Live search is off there; the
 | `fonts/` | Self-hosted Cinzel, Spectral and Manrope (SIL Open Font License) |
 | `app.js` | Results page behaviour: runs the search and shows each step as it arrives |
 | `filters.js` | The filter chips (colors, card types), the "Command zone" commander box, and their URL and request helpers, used by both pages |
+| `key.js` | The optional "your own OpenAI key" field: stored in `localStorage`, sent as the `X-OpenAI-Key` header |
 | `footer.js` | Footer on every page: privacy line, disclaimer, credits |
 | `theme.js` | Light/dark switch (the tone switch is only used by the `v-*` previews) |
 | `sample_result.js` | Placeholder search result used by the static previews |
@@ -62,7 +92,7 @@ On the home page, type an idea that contains one of these words, then search:
 | (none) | Normal results, arriving step by step |
 | `slow` | Normal results, with long pauses so you can study the loading states |
 | `empty` | The "no matches" page |
-| `limit` | The "daily limit reached" page |
+| `limit` | The "daily limit reached" page (with an own key saved, the limit is skipped; add `badkey` to see the "key not accepted" page) |
 | `paused` | The "search is paused" page |
 | `error` | The search starts, then fails partway through |
 

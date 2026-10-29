@@ -4,6 +4,8 @@ The site calls one endpoint on its own origin. For local work, `python3 mock_ser
 
 ## POST /api/search
 
+Optional header `X-OpenAI-Key`: the visitor's own OpenAI API key (20 to 200 characters), used for that one search only and never stored or logged. A search with a key skips the budget and every limit and is not counted in the ledger. Without it, the search is free but limited: a daily total for the whole site and `VISITOR_LIMIT` (5) searches per visitor per day. Cached answers are always free.
+
 Request (JSON, body at most 4 KB):
 
 ```json
@@ -118,6 +120,8 @@ Every error body is `{"error": code, "message": text}`.
 | 400 | `bad_request` | Missing, empty or too long query, bad JSON, bad weights, or bad `colors`, `types` or `commander` values. |
 | 400 | `unknown_commander` | `commander` is a well-formed name that is not in the local card data. |
 | 400 | `not_a_commander` | `commander` names a card that exists in the local card data but cannot lead a deck: it is not Commander-legal, or it is neither a legendary creature, nor a card whose text says it can be your commander, nor a legendary Vehicle or Spacecraft with power and toughness. |
-| 429 | `rate_limited` | The daily search limit is reached. |
+| 400 | `bad_request` | Also: the `X-OpenAI-Key` header is not 20 to 200 characters. |
+| 401 | `invalid_key` | OpenAI refused the `X-OpenAI-Key`. |
+| 429 | `rate_limited` | The site's daily limit or the visitor's daily limit is reached (no key sent). |
 | 503 | `paused` | Search is paused. |
 | 500 | `server_error` | Engine failed. No details are sent. |
