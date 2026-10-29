@@ -2,6 +2,8 @@
 
 Taleforge is a free website for Magic: The Gathering Commander players. You describe a deck idea, and it shows matching cards grouped by theme, with a short explanation for each card and links to its sources.
 
+**[Try the demo](https://hayobro7512.github.io/taleforge-web/)**: four searches recorded from the real engine. Live search is off in the demo.
+
 This repository holds only the website: pages, styles, scripts and design references. The search engine lives somewhere else. A small mock server stands in for it here and answers every search with placeholder data, so you can work on the site without the engine.
 
 ## Screenshots
