@@ -88,11 +88,13 @@
         <span class="kbd" aria-hidden="true">or ⌘ ↵</span>
       </div>
     </form>
+    <p class="preview-note" id="demo-note" hidden><strong>Demo. </strong>Live search is off here. Pick an example: each was searched ahead of time with the real engine.</p>
     <div class="examples">
       <span class="label">Try</span>
-      <button type="button" class="btn btn-secondary btn-sm" data-example>Give me a deck built around Nicol Bolas and Ugin</button>
-      <button type="button" class="btn btn-secondary btn-sm" data-example>A deck about Liliana's betrayal of Bolas</button>
-      <button type="button" class="btn btn-secondary btn-sm" data-example>A War of the Spark rivalry deck</button>
+      <button type="button" class="btn btn-secondary btn-sm" data-example>Cards on the downfall and defeat of Bolas in War of the Spark</button>
+      <button type="button" class="btn btn-secondary btn-sm" data-example>Synergy cards for a Murders at Karlov Manor deck</button>
+      <button type="button" class="btn btn-secondary btn-sm" data-example>The 2015 Battle for Zendikar Eldrazi</button>
+      <button type="button" class="btn btn-secondary btn-sm" data-example>Jace, Multiverse Architect: a planeswalker tribal deck with reality-fracture themed Jace and planeswalker cards</button>
     </div>
   </div>
 
@@ -182,8 +184,13 @@
 <script src="filters.js"></script>
 <script src="key.js"></script>
 <script src="fx.js"></script>
+<script src="demo.js"></script>
 
 <script>
+  if (TaleforgeDemo) {
+    TaleforgeDemo.hide('command-zone', 'filters-box', 'key-box');
+    document.getElementById('demo-note').hidden = false;
+  }
   const form = document.querySelector('.search');
   const q = document.getElementById('q');
   const hint = document.getElementById('hint');

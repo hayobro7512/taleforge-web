@@ -4,6 +4,8 @@
 
 Taleforge is a free website for Commander players who build around a story instead of a stat line. Type "a deck about Liliana's betrayal of Bolas" or "a War of the Spark rivalry deck" and it finds Commander-legal cards that tie to that character, guild or storyline, and tells you why each one belongs.
 
+**[Try the demo](https://hayobro7512.github.io/taleforge-web/)**: four searches recorded from the real engine. Live search is off in the demo.
+
 ![Home page: the search box under the portal](docs/screenshots/home.jpg)
 
 ## What you get
@@ -55,6 +57,8 @@ open http://127.0.0.1:8000
 
 Press Ctrl+C in Terminal to stop the server.
 
+A static demo runs on GitHub Pages with no server. Live search is off there; the example ideas replay real searches recorded in `demo/`. To re-record, run the real engine and save each `POST /api/search?stream=1` response for the queries in `demo.js` as `demo/NN.sse`.
+
 ## What is where
 
 | Path | What it is |
@@ -76,6 +80,7 @@ Press Ctrl+C in Terminal to stop the server.
 | `design/`, `design-dark/`, `design-blackout/` | Reference exports from Claude Design: the design system (`_ds/`, colour, type and spacing tokens) and the full design file `Taleforge.dc.html`. Not shipped. |
 | `API.md` | The contract between the site and the search engine |
 | `mock_server.py`, `fixtures/` | The mock search server and the placeholder answers it sends |
+| `demo.js`, `demo/` | Static demo on GitHub Pages: live search off, results replayed from searches recorded on the real engine (`demo/NN.sse`) |
 | `tests/` | Checks that the placeholder answers match `API.md` |
 
 ## Try every state

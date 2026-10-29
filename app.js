@@ -143,6 +143,8 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
 
   // On narrow screens the aside stacks above the results, so its long filter panel starts folded.
   if (matchMedia('(max-width: 1000px)').matches) $('refine').open = false;
+  // Filters, mix and commander each run a new search, which the demo can't do.
+  if (TaleforgeDemo) TaleforgeDemo.hide('refine', 'command-zone');
 
   // ---- rendering ----
   const setStep = (k) => [...$('steps').children].forEach((li, i) => {
@@ -368,6 +370,18 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
     }
   };
 
+  // The demo (demo.js) has only recorded searches; any other idea gets links to them.
+  const showDemoOnly = () => {
+    const list = el('div', 'examples');
+    TaleforgeDemo.QUERIES.forEach((x) => {
+      const a = el('a', 'btn btn-secondary btn-sm', x);
+      a.href = 'results.html?' + new URLSearchParams({ q: x });
+      list.append(a);
+    });
+    showState('Demo', 'Live search is off in this demo.',
+      'These ideas were searched ahead of time with the real engine. Pick one to see its results.', list);
+  };
+
   // ---- search ----
   // Returns true for an event that ends the search.
   const handle = (event, data) => {
@@ -398,12 +412,15 @@ if (typeof module !== 'undefined') module.exports = Taleforge;
     setStep(0);
     const weights = Taleforge.weights(balance());
     let finished = false;
+    const demoFile = TaleforgeDemo && TaleforgeDemo.file(query);
+    if (TaleforgeDemo && !demoFile) { showDemoOnly(); return; }
     try {
-      const res = await fetch('/api/search?stream=1', {
+      const res = demoFile ? await fetch(demoFile, { signal: run.signal }) : await fetch('/api/search?stream=1', {
         method: 'POST', headers: { 'Content-Type': 'application/json', ...TaleforgeKey.headers() },
         body: JSON.stringify({ query, weights, ...TaleforgeFilters.body(filters) }), signal: run.signal,
       });
-      if (!(res.headers.get('Content-Type') || '').startsWith('text/event-stream')) {
+      if (demoFile && !res.ok) { showError(0); return; }
+      if (!demoFile && !(res.headers.get('Content-Type') || '').startsWith('text/event-stream')) {
         showError(res.status, await res.json().catch(() => null));
         return;
       }
