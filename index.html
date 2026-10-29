@@ -84,16 +84,17 @@
         <span class="kbd" aria-hidden="true">or ⌘ ↵</span>
       </div>
     </form>
-    <p class="preview-note" id="demo-note" hidden><strong>Demo. </strong>Live search is off here. Pick an example or a legend: each was searched ahead of time with the real engine.</p>
+    <p class="preview-note" id="demo-note" hidden><strong>Demo. </strong>Live search is off here. Pick an example: each was searched ahead of time with the real engine.</p>
     <div class="examples">
       <span class="label">Try</span>
-      <button type="button" class="btn btn-secondary btn-sm" data-example>Give me a deck built around Nicol Bolas and Ugin</button>
-      <button type="button" class="btn btn-secondary btn-sm" data-example>A deck about Liliana's betrayal of Bolas</button>
-      <button type="button" class="btn btn-secondary btn-sm" data-example>A War of the Spark rivalry deck</button>
+      <button type="button" class="btn btn-secondary btn-sm" data-example>Cards on the downfall and defeat of Bolas in War of the Spark</button>
+      <button type="button" class="btn btn-secondary btn-sm" data-example>Synergy cards for a Murders at Karlov Manor deck</button>
+      <button type="button" class="btn btn-secondary btn-sm" data-example>The 2015 Battle for Zendikar Eldrazi</button>
+      <button type="button" class="btn btn-secondary btn-sm" data-example>Jace, Multiverse Architect: a planeswalker tribal deck with reality-fracture themed Jace and planeswalker cards</button>
     </div>
   </div>
 
-  <section class="legends" aria-labelledby="legends-title">
+  <section class="legends" id="legends" aria-labelledby="legends-title">
     <span class="label kicker">Legends of the multiverse</span>
     <h2 id="legends-title">Start from a legend</h2>
     <p class="note">Pick a planeswalker to start your idea.</p>
@@ -182,7 +183,7 @@
 
 <script>
   if (TaleforgeDemo) {
-    TaleforgeDemo.hide('command-zone', 'filters-box');
+    TaleforgeDemo.hide('command-zone', 'filters-box', 'legends');
     document.getElementById('demo-note').hidden = false;
   }
   const form = document.querySelector('.search');
