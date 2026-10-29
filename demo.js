@@ -17,7 +17,7 @@ const TaleforgeDemo = /\.github\.io$/.test(location.hostname) ? (() => {
       const i = QUERIES.findIndex((x) => norm(x) === norm(q));
       return i < 0 ? null : 'demo/' + String(i).padStart(2, '0') + '.sse';
     },
-    // The parts of a page that need the live server (or lead to unrecorded ideas) are hidden, and the Beta badge reads Demo.
+    // The parts of a page that need the live server are hidden, and the Beta badge reads Demo.
     hide(...ids) {
       ids.forEach((id) => { document.getElementById(id).hidden = true; });
       document.querySelector('.badge').textContent = 'Demo';
